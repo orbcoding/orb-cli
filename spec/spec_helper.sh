@@ -27,6 +27,7 @@ spec_helper_configure() {
 }
 
 _orb_root="$PWD"
+_orb_bin="$PWD"/bin/orb
 spec_orb='spec/fixtures/.orb'
 spec_proxy='spec/fixtures/proxy.sh'
 

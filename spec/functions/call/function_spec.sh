@@ -38,12 +38,12 @@ End
 Describe '_orb_get_current_function_descriptor'
   It 'includes namespace if present'
     When call _orb_get_current_function_descriptor test_fn test_namespace
-    The variable _orb_function_descriptor should equal "test_namespace->$(orb_bold)test_fn$(orb_normal)"
+    The variable _orb_function_descriptor should equal "test_namespace->$(orb_bold test_fn)"
   End
 
   It 'only fn if no namespace'
     When call _orb_get_current_function_descriptor test_fn
-    The variable _orb_function_descriptor should equal $(orb_bold)test_fn$(orb_normal)
+    The variable _orb_function_descriptor should equal "$(orb_bold test_fn)"
   End
 End
 

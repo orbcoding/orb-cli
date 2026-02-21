@@ -1,8 +1,6 @@
 _orb_settings_declaration=(
   --help = _orb_setting_help
     "Show help"
-  -n = _orb_setting_list_namespaces
-    "List available namespaces"
   -e 1 = _orb_setting_extensions
     "Additional orb extension folders"
     Multiple: true

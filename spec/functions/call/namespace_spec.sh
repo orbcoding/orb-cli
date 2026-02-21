@@ -38,23 +38,24 @@ End
 
 # _orb_collect_namespace_files
 Describe '_orb_collect_namespace_files'
-  It 'stores _orb_namespace_files and tracks their orb dirs'
-    _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext spec/fixtures/functions/call/namespace.sh/ext2 )
+  It 'stores single _orb_namespace_file and tracks directory'
+    _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+    _orb_namespace=namespace1
     When call _orb_collect_namespace_files
     The variable "_orb_namespace_files[@]" should eq "\
-spec/fixtures/functions/call/namespace.sh/ext/namespaces/namespace1.sh \
-spec/fixtures/functions/call/namespace.sh/ext/namespaces/namespace2.sh \
-spec/fixtures/functions/call/namespace.sh/ext/namespaces/namespace3/namespace3.sh \
-spec/fixtures/functions/call/namespace.sh/ext2/namespaces/namespace21.sh \
-spec/fixtures/functions/call/namespace.sh/ext2/namespaces/namespace22.sh \
-spec/fixtures/functions/call/namespace.sh/ext2/namespaces/namespace23/namespace23.sh"
+spec/fixtures/functions/call/namespace.sh/ext/namespaces/namespace1.sh"
     The variable "_orb_namespace_files_orb_dir_tracker[@]" should eq "\
-spec/fixtures/functions/call/namespace.sh/ext \
-spec/fixtures/functions/call/namespace.sh/ext \
-spec/fixtures/functions/call/namespace.sh/ext \
-spec/fixtures/functions/call/namespace.sh/ext2 \
-spec/fixtures/functions/call/namespace.sh/ext2 \
-spec/fixtures/functions/call/namespace.sh/ext2"
+spec/fixtures/functions/call/namespace.sh/ext"
+  End
+  
+  It 'stores directory with _orb_namespace_files and tracks directory'
+    _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+    _orb_namespace=namespace3
+    When call _orb_collect_namespace_files
+    The variable "_orb_namespace_files[@]" should eq "\
+spec/fixtures/functions/call/namespace.sh/ext/namespaces/namespace3/namespace3.sh"
+    The variable "_orb_namespace_files_orb_dir_tracker[@]" should eq "\
+spec/fixtures/functions/call/namespace.sh/ext"
   End
 End
 

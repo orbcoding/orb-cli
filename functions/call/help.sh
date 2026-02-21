@@ -17,14 +17,14 @@ _orb_print_orb_help() {
 	local def_namespace_msg
 
 	if [[ -n $ORB_DEFAULT_NAMESPACE ]]; then
-		def_namespace_msg="Default namespace: $(orb_bold)$ORB_DEFAULT_NAMESPACE$(orb_normal)"
+		def_namespace_msg="Default namespace: $(orb_bold "$ORB_DEFAULT_NAMESPACE")"
 	else
 		def_namespace_msg="Default namespace \$ORB_DEFAULT_NAMESPACE not set"
 	fi
 
 	local help_msg="$def_namespace_msg.\n\n"
 
-	if [[ -z "${_orb_namespaces[@]}" ]]; then
+	if [[ -z "${_orb_namespaces[*]}" ]]; then
 		help_msg+="No namespaces found"
 	else
 		help_msg+="$(_orb_print_available_namespaces)\n"
@@ -37,15 +37,15 @@ _orb_print_orb_help() {
 _orb_print_namespace_help() {
 	local i=0 file current_dir output
 
-	local file; for file in ${_orb_namespace_files[@]}; do
+	local file; for file in "${_orb_namespace_files[@]}"; do
 		local dir="${_orb_namespace_files_orb_dir_tracker[$i]}"
 
 		if [[ "$dir" != "$current_dir" ]]; then
 			current_dir="$dir"
-			output+="-----------------  $(orb_italic)${current_dir}$(orb_normal)\n"
+			output+="-----------------  $(orb_italic "$current_dir")\n"
 		fi
 
-		output+="$(orb_bold)$(basename $file)$(orb_normal)\n"
+		output+="$(orb_bold "$(basename $file)")\n"
 		source "$file"
 		local fns; orb_get_public_functions "$file" fns
 
@@ -79,7 +79,7 @@ _orb_print_orb_function_and_comment() {
 	declare -n comments=_orb_declared_comments$_orb_variable_suffix
 	declare -n function_descriptor=_orb_function_descriptor$_orb_variable_suffix
 	local comment="${comments[function]}"
-	echo "$(orb_bold)$function_descriptor$(orb_normal) $([[ -n "$comment" ]] && echo "- $comment")"
+	echo "$(orb_bold "$function_descriptor") $([[ -n "$comment" ]] && echo "- $comment")"
 }
 
 _orb_print_args_explanation() {
@@ -87,7 +87,7 @@ _orb_print_args_explanation() {
 	[[ ${#declared_args[@]} == 0 ]] && return 1
 
 	OLD_IFS=$IFS
-	IFS='§'; local msg="$(orb_bold)§${_orb_available_arg_options_help[*]}§$(orb_normal)\n"
+	IFS='§'; local msg="$(orb_bold '§')${_orb_available_arg_options_help[*]}$(orb_bold '§')\n"
 	IFS=$OLD_IFS
 
 	local arg; for arg in "${declared_args[@]}"; do

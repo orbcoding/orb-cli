@@ -11,7 +11,7 @@ _orb_collect_orb_extensions() { # $1 = start path, $2 = stop path
 
 
 _orb_parse_env_extensions() {
-  local ext; for ext in ${_orb_extensions[@]}; do
+  local ext; for ext in "${_orb_extensions[@]}"; do
     if [[ -f "$ext/.env" ]]; then
       orb_parse_env "$ext/.env"
     fi

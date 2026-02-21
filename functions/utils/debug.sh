@@ -29,7 +29,7 @@ function orb_print_args() { # print collected arguments, useful for debugging
 
   echo -e "$_orb_function_descriptor_ref - Received argument values:\n"
 
-  local _orb_msg="$(orb_bold)§Variable:§Value:$(orb_normal)\n"
+  local _orb_msg="$(orb_bold "§Variable:§Value:")\n"
 
   local _orb_arg; for _orb_arg in ${_orb_declared_args_ref[@]}; do
     if _orb_has_declared_flagged_arg $_orb_arg; then

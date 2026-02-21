@@ -25,9 +25,9 @@ _orb_get_current_function_descriptor() { # $1 = $_orb_function_name $2 = $_orb_n
 	local ns=$2
 
 	if [[ -n $ns ]]; then
-		_orb_function_descriptor="$ns->$(orb_bold)${fn}$(orb_normal)"
+		_orb_function_descriptor="$ns->$(orb_bold ${fn})"
 	else
-		_orb_function_descriptor="$(orb_bold)${fn}$(orb_normal)"
+		_orb_function_descriptor="$(orb_bold ${fn})"
 	fi
 }
 

@@ -1,39 +1,23 @@
-function orb_bold() { # $(orb_bold)text$(orb_normal)
-	echo '\033[1m'
+orb_bold=$(printf '\033[1m')
+orb_italic=$(printf '\033[3m')
+orb_underline=$(printf '\033[4m')
+orb_red=$(printf '\033[0;91m')
+orb_green=$(printf '\033[0;32m')
+orb_blue=$(printf '\033[0;34m')
+orb_normal=$(printf '\033[0m')
+orb_nocolor=$(printf '\033[0m')
+
+# Keep this as a function to process $1
+function orb_upcase() {
+    echo "$1" | tr '[:lower:]' '[:upper:]'
 }
 
-function orb_italic() { # $(orb_italic)text$(orb_normal)
-	echo '\e[3m'
-}
+# Formatting Functions
+orb_bold()      { echo "${orb_bold}$*${orb_normal}"; }
+orb_italic()    { echo "${orb_italic}$*${orb_normal}"; }
+orb_underline() { echo "${orb_underline}$*${orb_normal}"; }
 
-function orb_underline() { # $(orb_underline)text$(orb_normal)
-	echo '\e[4m'
-}
-
-function orb_red() { # $(orb_red)redtext...
-	echo '\033[0;91m'
-}
-
-function orb_green() { # $(orb_green)greentext...
-	echo '\033[0;32m'
-}
-
-function orb_blue() {
-	echo '\033[0;34m'
-}
-
-function orb_normal() { # $(orb_bold)text$(orb_normal)
-	echo '\033[0m'
-}
-
-function orb_nocolor() { # $(orb_nocolor)text...
- 	echo '\033[0m'
-}
-
-function orb_upcase() { # upcase all characters in text
-	echo "$1" | tr a-z A-Z
-}
-
-function orb_success() {
-	echo -e "$(orb_green)"$@"$(orb_normal)"
-}
+# Color Functions
+orb_red()       { echo "${orb_red}$*${orb_normal}"; }
+orb_green()     { echo "${orb_green}$*${orb_normal}"; }
+orb_blue()      { echo "${orb_blue}$*${orb_normal}"; }

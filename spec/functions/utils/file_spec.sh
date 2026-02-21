@@ -44,16 +44,16 @@ Describe 'orb_get_parents'
   It 'finds both if two files specified with &'
     arr=()
     cd spec/fixtures
-    When call orb_get_parents arr "_orb&.orb" $(pwd) $(pwd)
-    The variable "arr[0]" should eq $(pwd)/_orb
-    The variable "arr[1]" should eq $(pwd)/.orb
+    When call orb_get_parents arr "_orb&.orb" "$(pwd)" "$(pwd)"
+    The variable "arr[0]" should eq "$(pwd)/_orb"
+    The variable "arr[1]" should eq "$(pwd)/.orb"
   End
 
   It 'finds first if two files specified with |'
     arr=()
     cd spec/fixtures
-    When call orb_get_parents arr "_orb|.orb" $(pwd) $(pwd)
-    The variable "arr[0]" should eq $(pwd)/_orb
+    When call orb_get_parents arr "_orb|.orb" "$(pwd)" "$(pwd)"
+    The variable "arr[0]" should eq "$(pwd)/_orb"
     The variable "arr[1]" should be undefined
   End
 End
@@ -62,11 +62,11 @@ Describe 'orb_trim_uniq_realpaths'
   It 'trims away non unique realpaths'
     # first is symlink to second
     paths=(
-      $(pwd)/spec/fixtures/functions/utils/file.sh/nest1/nest2/nest3_file_symlink_to_2/specfile
-      $(pwd)/spec/fixtures/functions/utils/file.sh/nest1/nest2/specfile
+      "$(pwd)"/spec/fixtures/functions/utils/file.sh/nest1/nest2/nest3_file_symlink_to_2/specfile
+      "$(pwd)"/spec/fixtures/functions/utils/file.sh/nest1/nest2/specfile
     )
     When call orb_trim_uniq_realpaths paths paths
-    The variable "paths[@]" should eq $(pwd)/spec/fixtures/functions/utils/file.sh/nest1/nest2/nest3_file_symlink_to_2/specfile
+    The variable "paths[@]" should eq "$(pwd)"/spec/fixtures/functions/utils/file.sh/nest1/nest2/nest3_file_symlink_to_2/specfile
   End
 End
 

@@ -52,7 +52,7 @@ function orb_print_error() { #
   orb_if_present descriptor '$descriptor || $_orb_function_descriptor_history_0 || $_orb_function_descriptor'
 
 	error=(
-    "$(orb_red)$(orb_bold)Error:$(orb_normal)"
+    "${orb_red}${orb_bold}Error:${orb_normal}"
     "$descriptor"
     "$msg"
   )

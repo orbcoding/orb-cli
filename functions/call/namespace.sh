@@ -15,7 +15,6 @@ _orb_collect_namespaces() {
 
 _orb_collect_namespace_files() {
  	local ext; for ext in "${_orb_extensions[@]}"; do
-	 	# TODO loop through multiple namespaces directories
 		local dir="$ext/namespaces/$_orb_namespace"
 
 		if [[ -d "$dir" ]]; then
@@ -61,15 +60,16 @@ _orb_get_current_namespace_from_args() {
 		else
 			local error="not a valid namespace and \$ORB_DEFAULT_NAMESPACE not set. \n\n"
 			error+="$(_orb_print_available_namespaces)"
-			_orb_raise_error "$error" "$(orb_bold)${1-\"\"}$(orb_normal)" false
+			_orb_raise_error "$error" "$(orb_bold "${1-\"\"}")" false
 		fi
 	fi
 }
 
 _orb_print_available_namespaces() {
-	local msg=("$(orb_bold)Available namespaces:$(orb_normal)\n")
+	local msg=()
+	msg+=("$(orb_bold 'Available namespaces:')\n")
 
-	local ns; for ns in ${_orb_namespaces[@]}; do
+	local ns; for ns in "${_orb_namespaces[@]}"; do
 		msg+=("  $ns\n")
 	done
 

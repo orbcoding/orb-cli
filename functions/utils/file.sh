@@ -27,19 +27,33 @@ function orb_get_closest_parent() {
 # orb_get_parents
 # Needs _orb_prefix because of nameref
 orb_get_parents_orb=(
-	"Finds all files with filename(s) upwards in file system"
+	"Finds all files with filename(s) upwards in file system. Supports file1|file2 (first find) and file1&file2 (any find)"
 	Raw: true
 
 	1 = 'array_name'
 	2 = 'filename to find'
-	2 = 'start path' Default: '$PWD'
-	3 = 'last check path' Default: '/'
+	3 = 'start path' Default: '$PWD'
+	4 = 'last check path' Default: '/'
 )
 function orb_get_parents() {
 	declare -n _orb_assign_ref=$1
 	local _orb_filename=$2
 	local _orb_p=${3-$PWD}
 	local _orb_stop_p=${4-'/'}
+
+	# support multiple filenames separated by & (all matches) or | (first match)
+	local _orb_mode="single"   # single, all, first
+	local -a _orb_filenames=()
+
+	if [[ "$_orb_filename" == *"&"* ]]; then
+		IFS='&' read -r -a _orb_filenames <<< "$_orb_filename"
+		_orb_mode="all"
+	elif [[ "$_orb_filename" == *"|"* ]]; then
+		IFS='|' read -r -a _orb_filenames <<< "$_orb_filename"
+		_orb_mode="first"
+	else
+		_orb_filenames=("$_orb_filename")
+	fi
 
 	# Make relative paths absolute
 	[[ ${_orb_p:0:1} != '/' ]] && _orb_p="$PWD/$_orb_p"
@@ -48,11 +62,16 @@ function orb_get_parents() {
 	local _orb_fullpath
 
 	while true; do
-		_orb_fullpath="$_orb_p/$_orb_filename"
-
-		if [[ -e "$_orb_fullpath" ]]; then
-			_orb_assign_ref+=( "$_orb_fullpath" )
-		fi
+		# check each candidate name according to mode
+		for name in "${_orb_filenames[@]}"; do
+			_orb_fullpath="$_orb_p/$name"
+			if [[ -e "$_orb_fullpath" ]]; then
+				_orb_assign_ref+=( "$_orb_fullpath" )
+				if [[ "$_orb_mode" == "first" ]]; then
+					break
+				fi
+			fi
+		done
 
 		[[ "$_orb_p" == "$_orb_stop_p" ]] || [[ "$_orb_p" == '/' ]] && break
 		_orb_p=$(dirname "$_orb_p")

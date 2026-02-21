@@ -19,7 +19,7 @@ Describe '_orb_collect_orb_extensions'
   End
 
   It 'includes .orb from home dir if present'
-    HOME=$(pwd)/spec/fixtures
+    HOME="$(pwd)/spec/fixtures"
     cd /
     When call _orb_collect_orb_extensions
     The variable "_orb_extensions[0]" should eq "$HOME/.orb"
@@ -29,8 +29,8 @@ Describe '_orb_collect_orb_extensions'
   It 'finds _orb and .orb folders'
     cd spec/fixtures
     When call _orb_collect_orb_extensions
-    The variable "_orb_extensions[0]" should eq $(pwd)/_orb
-    The variable "_orb_extensions[1]" should eq $(pwd)/.orb
+    The variable "_orb_extensions[0]" should eq "$(pwd)/_orb"
+    The variable "_orb_extensions[1]" should eq "$(pwd)/.orb"
   End
 End
 

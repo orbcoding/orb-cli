@@ -102,10 +102,11 @@ End
 
 Describe 'orb_print_stack_trace'
   It 'Should print stack trace to stdout'
-    caller_fn() { orb_print_stack_trace; }
-    When call caller_fn
+    export -f orb_print_stack_trace
+
+    When call $spec_proxy orb_print_stack_trace
     The first line of output should equal ""
-    The second line of output should include main:
-    The second line of output should include caller_fn
+    The second line of output should include proxy_fn
+    The third line of output should include main
   End
 End
