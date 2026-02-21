@@ -33,3 +33,7 @@ function orb_nocolor() { # $(orb_nocolor)text...
 function orb_upcase() { # upcase all characters in text
 	echo "$1" | tr a-z A-Z
 }
+
+function orb_success() {
+	echo -e "$(orb_green)"$@"$(orb_normal)"
+}
