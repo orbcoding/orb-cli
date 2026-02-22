@@ -54,6 +54,7 @@ declare -A _orb_args_values_lengths=()
 # Declaration
 declare _orb_declared_raw=false
 declare -a _orb_declared_args=() # ordered
+declare -A _orb_declared_arg_aliases=()
 declare -A _orb_declared_arg_suffixes=()
 declare -A _orb_declared_vars=()
 declare -A _orb_declared_comments=()

@@ -220,6 +220,55 @@ Describe 'orb_is_input_arg'
   End
 End
 
+# orb_split_flag_aliases
+Describe 'orb_split_flag_aliases'
+  It 'splits alias token into ordered aliases'
+    When call orb_split_flag_aliases '-f|--file' _arr
+    The variable "_arr[@]" should equal "-f --file"
+  End
+
+  It 'returns single token as one-item array'
+    When call orb_split_flag_aliases '--file' _arr
+    The variable "_arr[@]" should equal "--file"
+  End
+End
+
+# orb_is_flag_or_alias_token
+Describe 'orb_is_flag_or_alias_token'
+  It 'succeeds for single flag'
+    When call orb_is_flag_or_alias_token '-f'
+    The status should be success
+  End
+
+  It 'succeeds for alias token'
+    When call orb_is_flag_or_alias_token '-f|--file'
+    The status should be success
+  End
+
+  It 'fails when any alias part is not a flag'
+    When call orb_is_flag_or_alias_token '-f|1'
+    The status should be failure
+  End
+End
+
+# orb_is_input_arg_token
+Describe 'orb_is_input_arg_token'
+  It 'succeeds for normal input arg tokens'
+    When call orb_is_input_arg_token '...'
+    The status should be success
+  End
+
+  It 'succeeds for alias flag token'
+    When call orb_is_input_arg_token '-f|--file'
+    The status should be success
+  End
+
+  It 'fails for invalid alias token'
+    When call orb_is_input_arg_token '-f|1'
+    The status should be failure
+  End
+End
+
 # orb_is_valid_variable_name
 Describe 'orb_is_valid_variable_name'
   It 'succeeds for chars'

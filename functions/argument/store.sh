@@ -1,7 +1,9 @@
 # Store argument values in single values array
 # With each argument specifying start index and length
+# Input key may be runtime alias (eg: --file); for flags we canonicalize first.
 _orb_store_arg_value() {
 	local arg=$1 && shift
+	orb_is_any_flag "$arg" && arg=$(_orb_get_declared_arg_key "$arg")
 
 	if _orb_has_arg_value $arg && _orb_arg_option_value_is $arg Multiple: true; then
 		_orb_args_values_start_indexes[$arg]+=" ${#_orb_args_values[@]}"
@@ -15,7 +17,10 @@ _orb_store_arg_value() {
 }
 
 _orb_store_boolean_flag() {
-	local arg="${1/+/-}"
+	# $1 can be short/long/+ alias flag token.
+	# Value is derived from prefix of original token (- => true, + => false),
+	# then stored on canonical key.
+	local arg=$(_orb_get_declared_arg_key "$1")
 	local shift=${2-1}
 	local value=$(_orb_flag_value "$1")
 	_orb_store_arg_value $arg $value
@@ -27,7 +32,8 @@ _orb_flag_value() {
 }
 
 _orb_store_flagged_arg() {
-	local arg=$1
+	# $1 can be alias token; suffix lookup always uses canonical key.
+	local arg=$(_orb_get_declared_arg_key "$1")
 	local suffix=${_orb_declared_arg_suffixes[$arg]}
 	local shift=${2-$(($suffix + 1))}
 	local value=("${args_remaining[@]:1:$suffix}")

@@ -59,6 +59,45 @@ function orb_is_input_arg() {
 	orb_is_nr $1 || orb_is_any_flag $1 || orb_is_block $1 || orb_is_rest $1 || orb_is_dash $1
 }
 
+# Validate that every alias in a pipe token is a real flag token.
+# Valid examples: "-f|--file", "+f|--file".
+# Invalid examples: "1|--file", "-f|...", "-b-|--block".
+function orb_is_flag_or_alias_token() {
+	local token="$1"
+	local aliases=()
+	orb_split_flag_aliases "$token" aliases
+
+	local alias
+	for alias in "${aliases[@]}"; do
+		orb_is_any_flag "$alias" || return 1
+	done
+
+	return 0
+}
+
+# Split a declaration token into flag aliases.
+# Input token types:
+# - single key: "-f" or "--file"
+# - alias key:  "-f|--file"
+# Output: writes array to assign_ref preserving order, where index 0 is canonical key.
+function orb_split_flag_aliases() {
+	local token="$1"
+	declare -n assign_ref=$2
+
+	if [[ "$token" == *"|"* ]]; then
+		IFS='|' read -r -a assign_ref <<< "$token"
+	else
+		assign_ref=("$token")
+	fi
+}
+
+# Declaration-token validator.
+# Accepts any standard input arg token (nr/flag/block/rest/dash)
+# OR an alias flag token like "-f|--file".
+function orb_is_input_arg_token() {
+	orb_is_input_arg "$1" || ([[ "$1" == *"|"* ]] && orb_is_flag_or_alias_token "$1")
+}
+
 function orb_is_valid_variable_name() {
 	[[ "$1" =~ ^[a-zA-ZwW_][a-zA-Z0-9_wW]*$ ]]
 }

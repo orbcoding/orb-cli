@@ -45,6 +45,7 @@ declare -ga _orb_history_variables=(
   _orb_declared_raw
 
   _orb_declared_args
+  _orb_declared_arg_aliases
   _orb_declared_arg_suffixes
   _orb_declared_vars
   _orb_declared_comments

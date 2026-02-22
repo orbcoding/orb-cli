@@ -79,6 +79,23 @@ Describe '_orb_validate_declared_args'
   End
 End
 
+Describe '_orb_validate_declared_arg_alias_token_types'
+  _orb_raise_invalid_declaration() { echo "$1" && exit 1; }
+
+  It 'fails when alias token contains non-flag alias part'
+    declaration=(-f\|1 = file)
+    When run _orb_validate_declared_arg_alias_token_types
+    The status should be failure
+    The output should eq "-f|1: invalid alias declaration"
+  End
+
+  It 'succeeds for valid alias flag token'
+    declaration=(-f\|--file = file)
+    When call _orb_validate_declared_arg_alias_token_types
+    The status should be success
+  End
+End
+
 # _orb_postvalidate_declared_args_options
 Describe '_orb_postvalidate_declared_args_options'
   It 'calls _orb_postvalidate_declared_args_options_catchs'

@@ -10,8 +10,24 @@ _orb_get_declared_number_args_in_order() {
     IFS=$'\n' _orb_assign_ref=($(sort <<<"${_orb_internal_nrs[*]}")); unset IFS
 }
 
+# Resolve incoming runtime arg key to canonical declared key.
+# Input examples: "+f", "-f", "--file"
+# Output examples: "-f" (if aliased), otherwise normalized input key.
+_orb_get_declared_arg_key() {
+  local arg=${1/+/-}
+  local aliases_name="_orb_declared_arg_aliases$_orb_variable_suffix"
+  declare -n aliases="$aliases_name"
+
+  if [[ -n ${aliases[$arg]} ]]; then
+    printf '%s\n' "${aliases[$arg]}" # safe output for - prefixed keys
+  else
+    printf '%s\n' "$arg"
+  fi
+}
+
 _orb_get_arg_comment() {
-  local arg=$1
+  # Alias-aware lookup: "--file" and "-f" return the same declaration comment.
+	local arg=$(_orb_get_declared_arg_key "$1")
   declare -n declared_comments=_orb_declared_comments$_orb_variable_suffix
   if [[ -n "${declared_comments[$arg]}" ]]; then
     echo "${declared_comments[$arg]}"
@@ -23,7 +39,8 @@ _orb_get_arg_comment() {
 # Default options values if not specified
 # _orb_ prefix local vars to prevent shadowing
 _orb_get_default_arg_option_value() {
-	local _orb_arg=$1
+  # Alias-aware: option defaults are computed on canonical arg key.
+  local _orb_arg=$(_orb_get_declared_arg_key "$1")
   local _orb_opt=$2
 	declare -n _orb_assign_ref=$3
 
@@ -42,7 +59,8 @@ _orb_get_default_arg_option_value() {
 # As we are assigning to variable with uncertain name
 # _orb_ prefix all local vars to prevent shadowing
 _orb_get_arg_option_value() {
-  local _orb_arg=$1
+  # Alias-aware: option values always come from canonical arg declaration entry.
+  local _orb_arg=$(_orb_get_declared_arg_key "$1")
   local _orb_opt=$2
   declare -n _orb_declaration_store=$3
 
@@ -68,7 +86,8 @@ _orb_get_arg_option_value() {
 # If called without assignment param $3 will just check if has value
 # _orb_ prefix local vars to prevent shadowing 
 _orb_get_arg_option_declaration() {
-  local _orb_arg=$1
+  # Alias-aware index lookup into mixed option-value storage arrays.
+  local _orb_arg=$(_orb_get_declared_arg_key "$1")
   local _orb_opt=$2
   declare -n _orb_option_start_indexes=_orb_declared_option_start_indexes$_orb_variable_suffix
 

@@ -97,6 +97,18 @@ Describe '_orb_get_declared_function_options'
     When call _orb_get_declared_function_options
     The variable "declared_function_options[@]" should be undefined
   End
+
+  It 'supports alias token as first declared arg boundary'
+    declaration=(
+      "Comment"
+      Raw: true
+
+      -f\|--file 1 = file
+    )
+
+    When call _orb_get_declared_function_options
+    The variable "declared_function_options[@]" should equal "Comment Raw: true"
+  End
 End
 
 # _orb_get_declared_args

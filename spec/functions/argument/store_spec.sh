@@ -70,6 +70,13 @@ Describe '_orb_store_boolean_flag'
     When call _orb_store_boolean_flag -f 0
     The variable "spec_fns[@]" should equal "_orb_shift_args 0"
   End
+
+  It 'stores verbose alias on canonical key'
+    declare -A _orb_declared_arg_aliases=([--flag]=-f [-f]=-f)
+    When call _orb_store_boolean_flag --flag
+    _orb_assign_stored_arg_values_to_declared_variables
+    The variable flag should equal true
+  End
 End
 
 Describe '_orb_flag_value'

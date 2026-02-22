@@ -15,6 +15,7 @@ End
 
 # _orb_get_arg_comment
 Describe '_orb_get_arg_comment'
+  declare -A _orb_declared_arg_aliases=()
   declare -A _orb_declared_comments=([1]="first comment" [2]="" [-f]="third comment")
   
   It 'succeeds and outputs comment if has comment'
@@ -43,6 +44,7 @@ End
 
 # _orb_get_default_arg_option_value
 Describe '_orb_get_default_arg_option_value'
+  declare -A _orb_declared_arg_aliases=()
   It 'sets required false for flags'
     When call _orb_get_default_arg_option_value -f Required: store_ref
     The variable store_ref should eq false
@@ -79,6 +81,7 @@ End
 
 # _orb_get_arg_option_value
 Describe '_orb_get_arg_option_value'
+  declare -A _orb_declared_arg_aliases=()
   Include scripts/initialize.sh
   _orb_get_arg_option_declaration() { return 0; }
   _orb_get_arg_nested_option_declaration() { [[ $2 == false ]] && echo 'just_val'; return 0; }
@@ -106,6 +109,7 @@ End
 
 # _orb_get_arg_option_declaration
 Describe '_orb_get_arg_option_declaration'
+  declare -A _orb_declared_arg_aliases=()
   declare -A _orb_declared_option_start_indexes=([Default:]="0")
   declare -A _orb_declared_option_lengths=([Default:]="2")
   _orb_declared_option_values=(my flag)

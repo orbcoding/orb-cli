@@ -7,6 +7,7 @@ Include scripts/initialize_variables.sh
 # _orb_has_declared_arg
 Describe '_orb_has_declared_arg'
   _orb_declared_args=(-f)
+  declare -A _orb_declared_arg_aliases=([--flag]=-f [-f]=-f)
 
   It 'succeeds when arg declared'
     When call _orb_has_declared_arg "-f"
@@ -22,11 +23,17 @@ Describe '_orb_has_declared_arg'
     When call _orb_has_declared_arg "+f"
     The status should be success
   End
+
+  It 'succeeds for declared verbose alias'
+    When call _orb_has_declared_arg "--flag"
+    The status should be success
+  End
 End
 
 # _orb_has_declared_boolean_flag
 Describe '_orb_has_declared_boolean_flag'
   _orb_declared_args=(-f)
+  declare -A _orb_declared_arg_aliases=()
 
   It 'succeeds when boolean flag declared'
     When call _orb_has_declared_boolean_flag "-f"
@@ -47,6 +54,7 @@ Describe '_orb_has_declared_boolean_flag'
   It 'handles declaration suffixes'
     _orb_variable_suffix="_suffix"
     _orb_declared_args_suffix=(-s)
+    declare -A _orb_declared_arg_aliases_suffix=()
     When call _orb_has_declared_boolean_flag -s
     The status should be success
   End
@@ -56,6 +64,7 @@ End
 # _orb_has_declared_flagged_arg
 Describe '_orb_has_declared_flagged_arg'
   _orb_declared_args=(-f)
+  declare -A _orb_declared_arg_aliases=()
   declare -A _orb_declared_arg_suffixes=([-f]=1)
 
   It 'succeeds when flagged arg declared'
@@ -77,6 +86,7 @@ Describe '_orb_has_declared_flagged_arg'
   It 'handles declaration suffixes'
     _orb_variable_suffix="_suffix"
     _orb_declared_args_suffix=(-s)
+    declare -A _orb_declared_arg_aliases_suffix=()
     declare -A _orb_declared_arg_suffixes_suffix=([-s]=1)
     When call _orb_has_declared_flagged_arg -s
     The status should be success
@@ -86,6 +96,7 @@ End
 # _orb_has_declared_array_flag_arg
 Describe '_orb_has_declared_array_flag_arg'
   _orb_declared_args=(-a -f -n)
+  declare -A _orb_declared_arg_aliases=()
   declare -A _orb_declared_arg_suffixes=([-a]=2 [-f]=1)
 
   It 'succeeds when suffix > 1'
@@ -107,6 +118,7 @@ End
 # _orb_has_declared_array_arg
 Describe '_orb_has_declared_array_arg'
   _orb_declared_args=(-b -f -m -a ... -b- --)
+  declare -A _orb_declared_arg_aliases=()
   declare -A _orb_declared_arg_suffixes=([-f]="1" [-m]="2")
   _orb_declared_option_values=(true)
   declare -A _orb_declared_option_start_indexes=([Multiple:]="- - - 0 - - -")

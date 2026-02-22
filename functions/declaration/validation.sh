@@ -35,6 +35,29 @@ _orb_validate_declared_args() {
 
 		((i++))
 	done
+
+	_orb_validate_declared_arg_alias_token_types
+}
+
+_orb_validate_declared_arg_alias_token_types() {
+	declare -p declaration >/dev/null 2>&1 || return 0
+
+	local i=1
+	local str; for str in "${declaration[@]:$i:$(( ${#declaration[@]}-2 ))}"; do
+		if [[ "$str" == "=" ]]; then
+			local arg_raw="${declaration[$i-1]}"
+
+			if [[ $i != 1 ]] && orb_is_nr "${declaration[$i-1]}" && orb_is_flag_or_alias_token "${declaration[$i-2]}"; then
+				arg_raw="${declaration[$i-2]}"
+			fi
+
+			if [[ $arg_raw == *"|"* ]] && ! orb_is_flag_or_alias_token "$arg_raw"; then
+				_orb_raise_invalid_declaration "$arg_raw: invalid alias declaration"
+			fi
+		fi
+
+		((i++))
+	done
 }
 
 _orb_postvalidate_declared_args_options() {

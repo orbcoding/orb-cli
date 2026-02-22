@@ -21,8 +21,8 @@ _orb_get_declared_function_options() {
 	local fn_start_i=0 fn_len
 	local i; for i in $(seq 0 $((${#declaration[@]} - 3))); do
 
-		if [[ ${declaration[$i+1]} == "=" ]] && orb_is_input_arg ${declaration[$i]}; then 
-			if orb_is_nr ${declaration[$i]} && orb_is_any_flag ${declaration[$i-1]}; then 
+		if [[ ${declaration[$i+1]} == "=" ]] && orb_is_input_arg_token ${declaration[$i]}; then 
+			if orb_is_nr ${declaration[$i]} && orb_is_flag_or_alias_token ${declaration[$i-1]}; then 
 				# step back if flagged arg
 				fn_len=$(($i - 1))
 			else

@@ -1,18 +1,19 @@
 # Declaration checkers
 _orb_has_declared_arg() {
-  local arg=${1/+/-}
+	# Accepts short/long aliases and normalized +flag forms.
+	local arg=$(_orb_get_declared_arg_key "$1")
 	orb_in_arr "$arg" "_orb_declared_args$_orb_variable_suffix"
 }
 
 _orb_has_declared_boolean_flag() { # $1 arg
-	local arg=$1
+	local arg=$(_orb_get_declared_arg_key "$1")
 	! (_orb_has_declared_arg $arg && orb_is_any_flag $arg) && return 1
 	declare -n suffixes="_orb_declared_arg_suffixes$_orb_variable_suffix"
   [[ -z ${suffixes[$arg]} ]]
 }
 
 _orb_has_declared_flagged_arg() { # $1 arg
-	local arg=$1
+	local arg=$(_orb_get_declared_arg_key "$1")
 	! _orb_has_declared_arg $arg && return 1
 	
 	declare -n suffixes="_orb_declared_arg_suffixes$_orb_variable_suffix"
@@ -20,7 +21,7 @@ _orb_has_declared_flagged_arg() { # $1 arg
 }
 
 _orb_has_declared_array_flag_arg() {
-	local arg=$1
+	local arg=$(_orb_get_declared_arg_key "$1")
 	
 	declare -n suffixes="_orb_declared_arg_suffixes$_orb_variable_suffix"
 	local suffix=${suffixes[$arg]}
