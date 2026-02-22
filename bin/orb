@@ -34,7 +34,7 @@ if [[ $_orb_initialized != true ]]; then
     source "$_orb_root/scripts/call/history.sh"
     source "$_orb_root/scripts/call/variables.sh"
     source "$_orb_root/scripts/call/settings.sh" "$@" 
-    source "$_orb_root/scripts/call/extensions.sh"
+    source "$_orb_root/scripts/call/libraries.sh"
     shift -- ${#_orb_settings_args[@]}
     source "$_orb_root/scripts/call/namespace_and_function.sh"
 

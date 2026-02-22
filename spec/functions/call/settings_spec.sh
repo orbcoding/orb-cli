@@ -8,17 +8,17 @@ Describe '_orb_extract_orb_settings_arguments'
   It 'extracts settings arguments'
     extract() { 
       _orb_parse_function_declaration _orb_settings_declaration
-      _orb_extract_orb_settings_arguments settings_args -e ext --help -r -e ext2 namespace function
+      _orb_extract_orb_settings_arguments settings_args -l lib --help -r -l lib2 namespace function
     }
     When call extract 
-    The variable "settings_args[0]" should equal "-e"
-    The variable "settings_args[@]" should equal "-e ext --help -r -e ext2"
+    The variable "settings_args[0]" should equal "-l"
+    The variable "settings_args[@]" should equal "-l lib --help -r -l lib2"
   End
 
   It 'raises error un undefined settings arg'
     extract() { 
       _orb_parse_function_declaration _orb_settings_declaration
-      _orb_extract_orb_settings_arguments settings_args -k -e ext --help -r -e ext2 namespace function
+      _orb_extract_orb_settings_arguments settings_args -k -l lib --help -r -l lib2 namespace function
     }
     When call extract 
     The output should equal "_orb_raise_invalid_orb_settings_arg -k"

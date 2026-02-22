@@ -9,7 +9,7 @@ if [[ $1 != only_args_collection ]]; then
   declare _orb_setting_help=false
   declare _orb_setting_raw=false
   declare _orb_setting_restore_functions=false
-  declare -a _orb_setting_extensions=()
+  declare -a _orb_setting_libraries=()
   declare -a _orb_settings_args=()
   
   # Internal configs
@@ -30,8 +30,8 @@ if [[ $1 != only_args_collection ]]; then
   declare -a _orb_namespace_files=() # namespace files collector
   declare -a _orb_namespace_files_orb_dir_tracker=() # same indexes with directory
 
-  # Extensions are always registered once, so initial call with -e will stick
-  # declare -a _orb_extensions
+  # Libraries are always registered once, so initial call with -l will stick
+  # declare -a _orb_libraries
   
   [[ -z $_orb_history_index ]] && declare _orb_history_index=0
   # _orb_function_declaration will be a nameref to ${_orb_function_name}_orb

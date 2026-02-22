@@ -23,19 +23,19 @@ Describe 'settings.sh'
     The variable "_orb_settings_args[@]" should eq "--restore-fns"
   End
 
-  It 'collects -e'
-    When call source scripts/call/settings.sh -e spec_ext -e spec_ext2
-    The variable "_orb_setting_extensions[0]" should equal "spec_ext"
-    The variable "_orb_setting_extensions[1]" should equal "spec_ext2"
-    The variable "_orb_settings_args[@]" should eq "-e spec_ext -e spec_ext2"
+  It 'collects -l'
+    When call source scripts/call/settings.sh -l spec_lib -l spec_lib2
+    The variable "_orb_setting_libraries[0]" should equal "spec_lib"
+    The variable "_orb_setting_libraries[1]" should equal "spec_lib2"
+    The variable "_orb_settings_args[@]" should eq "-l spec_lib -l spec_lib2"
   End
 
-  It 'adds collected extensions to _orb_extensions array'
-    _orb_extensions=("some/ext")
-    When call source scripts/call/settings.sh -e spec_ext -e spec_ext2
-    The variable "_orb_extensions[0]" should equal "some/ext"
-    The variable "_orb_extensions[1]" should equal "spec_ext"
-    The variable "_orb_extensions[2]" should equal "spec_ext2"
-    The variable "_orb_settings_args[@]" should eq "-e spec_ext -e spec_ext2"
+  It 'adds collected libraries to _orb_libraries array'
+    _orb_libraries=("some/lib")
+    When call source scripts/call/settings.sh -l spec_lib -l spec_lib2
+    The variable "_orb_libraries[0]" should equal "some/lib"
+    The variable "_orb_libraries[1]" should equal "spec_lib"
+    The variable "_orb_libraries[2]" should equal "spec_lib2"
+    The variable "_orb_settings_args[@]" should eq "-l spec_lib -l spec_lib2"
   End
 End

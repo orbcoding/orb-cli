@@ -53,14 +53,14 @@ _orb_get_current_namespace_from_args() {
 
 _orb_collect_available_namespaces() {
 	# Optional path for nested lookup.
-	# Empty => collect top-level namespaces from "$ext/namespaces".
+	# Empty => collect top-level namespaces from "$lib/namespaces".
 	# Set (e.g. "a" or "a/namespaces/b") => collect only direct children
 	# under that branch, used while resolving nested namespace args.
 	local namespace_path="$1"
 	_orb_namespaces=()
 
-  local ext; for ext in "${_orb_extensions[@]}"; do
-		local namespaces_dir="$ext/namespaces"
+  local lib; for lib in "${_orb_libraries[@]}"; do
+		local namespaces_dir="$lib/namespaces"
 		[[ -n "$namespace_path" ]] && namespaces_dir+="/$namespace_path/namespaces"
 
 		[ -d "$namespaces_dir" ] || continue
@@ -93,8 +93,8 @@ _orb_print_available_namespaces() {
 _orb_collect_namespace_files() {
 	[[ -z "$_orb_namespace_path" ]] && return
 
- 	local ext; for ext in "${_orb_extensions[@]}"; do
-		local dir="$ext/namespaces/$_orb_namespace_path"
+ 	local lib; for lib in "${_orb_libraries[@]}"; do
+		local dir="$lib/namespaces/$_orb_namespace_path"
 
 		if [[ -d "$dir" ]]; then
 	 		local files
@@ -104,13 +104,13 @@ _orb_collect_namespace_files() {
 			local to=$(( $from + ${#files[@]} - 1 ))
 
 			local i; for i in $(seq $from $to ); do
-				_orb_namespace_files_orb_dir_tracker[$i]="$ext"
+				_orb_namespace_files_orb_dir_tracker[$i]="$lib"
 			done
 
 			_orb_namespace_files+=( "${files[@]}" )
 
 		elif [[ -f "${dir}.sh" ]]; then
-			_orb_namespace_files_orb_dir_tracker[${#_orb_namespace_files[@]}]="$ext"
+			_orb_namespace_files_orb_dir_tracker[${#_orb_namespace_files[@]}]="$lib"
 			_orb_namespace_files+=( "${dir}.sh" )
 		fi
 	done

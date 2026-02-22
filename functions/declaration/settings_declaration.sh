@@ -1,8 +1,8 @@
 _orb_settings_declaration=(
   --help = _orb_setting_help
     "Show help"
-  -e 1 = _orb_setting_extensions
-    "Additional orb extension folders"
+  -l 1 = _orb_setting_libraries
+    "Additional orb library folders"
     Multiple: true
   -r = _orb_setting_raw
     "Pass raw input arguments to called function"

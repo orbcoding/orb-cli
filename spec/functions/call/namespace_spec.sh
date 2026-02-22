@@ -6,7 +6,7 @@ Include functions/utils/argument.sh
 # _orb_collect_available_namespaces
 Describe '_orb_collect_available_namespaces'
   It 'finds namespaces in orb folders'
-    _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+    _orb_libraries=( spec/fixtures/functions/call/namespace.sh/lib )
     When call _orb_collect_available_namespaces
     The variable "_orb_namespaces[0]" should eq a
     The variable "_orb_namespaces[1]" should eq b
@@ -15,7 +15,7 @@ Describe '_orb_collect_available_namespaces'
   End
 
   It 'adds each once'
-    _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext spec/fixtures/functions/call/namespace.sh/ext )
+    _orb_libraries=( spec/fixtures/functions/call/namespace.sh/lib spec/fixtures/functions/call/namespace.sh/lib )
     When call _orb_collect_available_namespaces
     The variable "_orb_namespaces[0]" should eq a
     The variable "_orb_namespaces[1]" should eq b
@@ -24,7 +24,7 @@ Describe '_orb_collect_available_namespaces'
   End
 
   It 'adds from multiple folders'
-    _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext spec/fixtures/functions/call/namespace.sh/ext2 )
+    _orb_libraries=( spec/fixtures/functions/call/namespace.sh/lib spec/fixtures/functions/call/namespace.sh/lib2 )
     When call _orb_collect_available_namespaces
     The variable "_orb_namespaces[0]" should eq a
     The variable "_orb_namespaces[1]" should eq b
@@ -36,7 +36,7 @@ Describe '_orb_collect_available_namespaces'
   End
 
   It 'can collect nested namespaces for a parent namespace path'
-    _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+    _orb_libraries=( spec/fixtures/functions/call/namespace.sh/lib )
     When call _orb_collect_available_namespaces c
     The variable "_orb_namespaces[0]" should eq ca
     The variable "_orb_namespaces[1]" should eq cb
@@ -47,36 +47,36 @@ End
 # _orb_collect_namespace_files
 Describe '_orb_collect_namespace_files'
   It 'stores single _orb_namespace_file and tracks directory'
-    _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+    _orb_libraries=( spec/fixtures/functions/call/namespace.sh/lib )
     _orb_namespace_name=a
     _orb_namespace_path=a
     When call _orb_collect_namespace_files
     The variable "_orb_namespace_files[@]" should eq "\
-spec/fixtures/functions/call/namespace.sh/ext/namespaces/a.sh"
+spec/fixtures/functions/call/namespace.sh/lib/namespaces/a.sh"
     The variable "_orb_namespace_files_orb_dir_tracker[@]" should eq "\
-spec/fixtures/functions/call/namespace.sh/ext"
+spec/fixtures/functions/call/namespace.sh/lib"
   End
   
   It 'stores directory with _orb_namespace_files and tracks directory'
-    _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+    _orb_libraries=( spec/fixtures/functions/call/namespace.sh/lib )
     _orb_namespace_name=c
     _orb_namespace_path=c
     When call _orb_collect_namespace_files
     The variable "_orb_namespace_files[@]" should eq "\
-spec/fixtures/functions/call/namespace.sh/ext/namespaces/c/c.sh"
+spec/fixtures/functions/call/namespace.sh/lib/namespaces/c/c.sh"
     The variable "_orb_namespace_files_orb_dir_tracker[@]" should eq "\
-spec/fixtures/functions/call/namespace.sh/ext"
+spec/fixtures/functions/call/namespace.sh/lib"
   End
 
   It 'stores nested namespace files from nested namespace path'
-    _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+    _orb_libraries=( spec/fixtures/functions/call/namespace.sh/lib )
     _orb_namespace_name=ca
     _orb_namespace_path=c/namespaces/ca
     When call _orb_collect_namespace_files
     The variable "_orb_namespace_files[@]" should eq "\
-spec/fixtures/functions/call/namespace.sh/ext/namespaces/c/namespaces/ca/ca.sh"
+spec/fixtures/functions/call/namespace.sh/lib/namespaces/c/namespaces/ca/ca.sh"
     The variable "_orb_namespace_files_orb_dir_tracker[@]" should eq "\
-spec/fixtures/functions/call/namespace.sh/ext"
+spec/fixtures/functions/call/namespace.sh/lib"
   End
 End
 
@@ -108,7 +108,7 @@ End
 Describe '_orb_get_current_namespace_from_args'
   Context 'when namespace defined'
     It 'returns first argument as namespace'
-      _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+      _orb_libraries=( spec/fixtures/functions/call/namespace.sh/lib )
       When call _orb_get_current_namespace_from_args a 1 2
       The status should be success
       The variable _orb_namespace_name should equal a
@@ -116,7 +116,7 @@ Describe '_orb_get_current_namespace_from_args'
     End
 
     It 'resolves nested namespace path and chain'
-      _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+      _orb_libraries=( spec/fixtures/functions/call/namespace.sh/lib )
       _orb_collect_available_namespaces
       When call _orb_get_current_namespace_from_args c ca caa my_function
       The status should be success
