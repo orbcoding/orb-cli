@@ -1,13 +1,14 @@
-_orb_collect_namespaces
-_orb_get_current_namespace "$@" && shift
+_orb_get_current_namespace "$@" && \
+shift "$(_orb_get_namespace_shift_steps)"
+
 _orb_get_current_function "$@" && shift
-_orb_get_current_function_descriptor $_orb_function_name $_orb_namespace
+_orb_get_current_function_descriptor "$_orb_function_name" "$_orb_namespace_chain_name"
 _orb_validate_current_namespace
 _orb_validate_current_function
 
 if [[ -z $_orb_function_name ]]; then
   if ! $_orb_setting_raw && ! $_orb_setting_help; then
-    _orb_raise_error "is a namespace, no command or function provided\n\n Use \`orb --help $_orb_namespace\` for list of functions"
+    _orb_raise_error "is a namespace, no function provided\n\n Use \`orb --help $_orb_namespace_chain_name\` for list of functions" "$_orb_namespace_chain_name"
   fi
 else
   declare -n _orb_function_declaration="${_orb_function_name}_orb"

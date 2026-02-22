@@ -20,12 +20,12 @@ _orb_get_current_function_from_trace() {
 	done
 }
 
-_orb_get_current_function_descriptor() { # $1 = $_orb_function_name $2 = $_orb_namespace
+_orb_get_current_function_descriptor() { # $1 = $_orb_function_name $2 = $_orb_namespace_name
 	local fn=$1
 	local ns=$2
 
 	if [[ -n $ns ]]; then
-		_orb_function_descriptor="$ns->$(orb_bold ${fn})"
+		_orb_function_descriptor="$ns -> $(orb_bold ${fn})"
 	else
 		_orb_function_descriptor="$(orb_bold ${fn})"
 	fi

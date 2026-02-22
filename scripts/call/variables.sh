@@ -16,7 +16,10 @@ if [[ $1 != only_args_collection ]]; then
   declare _orb_function_dump
 
   # Namespace and function info
-  declare _orb_namespace
+  declare _orb_namespace_name
+  declare _orb_namespace_chain_name
+  declare _orb_namespace_path
+  declare -a _orb_namespace_chain=()
   declare _orb_function_name
   declare _orb_function_descriptor
   declare _orb_function_exit_code
@@ -27,7 +30,7 @@ if [[ $1 != only_args_collection ]]; then
   declare -a _orb_namespace_files=() # namespace files collector
   declare -a _orb_namespace_files_orb_dir_tracker=() # same indexes with directory
 
-  # Extensions are always registered once registered, so calling with -e will stick
+  # Extensions are always registered once, so initial call with -e will stick
   # declare -a _orb_extensions
   
   [[ -z $_orb_history_index ]] && declare _orb_history_index=0

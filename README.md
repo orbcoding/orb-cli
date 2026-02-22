@@ -164,7 +164,6 @@ If using a dedicated namespace folder you can also add
 - `.orb/.env` - will be parsed into your scripts as exported variables.
 - Core uses following `.env` vars
   - `ORB_DEFAULT_NAMESPACE` - if set to `my_namespace`, you can call `orb my_function` directly.
-  - `ORB_DEFAULT_NAMESPACE` - if set to `my_namespace`, you can call `orb my_function` directly.
 
 
 ## Functions

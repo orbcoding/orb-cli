@@ -22,7 +22,7 @@ Describe '_orb_handle_help'
   End
 
   It 'prints namespace help if namespace provided'
-    _orb_namespace=spec
+    _orb_namespace_name=spec
     When call _orb_handle_help
     The output should equal _orb_print_namespace_help
   End

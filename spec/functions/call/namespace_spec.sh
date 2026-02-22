@@ -3,36 +3,44 @@ Include functions/utils/text.sh
 Include functions/utils/utils.sh
 Include functions/utils/argument.sh
 
-# _orb_collect_namespaces
-Describe '_orb_collect_namespaces'
+# _orb_collect_available_namespaces
+Describe '_orb_collect_available_namespaces'
   It 'finds namespaces in orb folders'
     _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
-    When call _orb_collect_namespaces
-    The variable "_orb_namespaces[0]" should eq namespace1
-    The variable "_orb_namespaces[1]" should eq namespace2
-    The variable "_orb_namespaces[2]" should eq namespace3
+    When call _orb_collect_available_namespaces
+    The variable "_orb_namespaces[0]" should eq a
+    The variable "_orb_namespaces[1]" should eq b
+    The variable "_orb_namespaces[2]" should eq c
     The variable "_orb_namespaces[3]" should be undefined
   End
 
   It 'adds each once'
     _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext spec/fixtures/functions/call/namespace.sh/ext )
-    When call _orb_collect_namespaces
-    The variable "_orb_namespaces[0]" should eq namespace1
-    The variable "_orb_namespaces[1]" should eq namespace2
-    The variable "_orb_namespaces[2]" should eq namespace3
+    When call _orb_collect_available_namespaces
+    The variable "_orb_namespaces[0]" should eq a
+    The variable "_orb_namespaces[1]" should eq b
+    The variable "_orb_namespaces[2]" should eq c
     The variable "_orb_namespaces[3]" should be undefined
   End
 
   It 'adds from multiple folders'
     _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext spec/fixtures/functions/call/namespace.sh/ext2 )
-    When call _orb_collect_namespaces
-    The variable "_orb_namespaces[0]" should eq namespace1
-    The variable "_orb_namespaces[1]" should eq namespace2
-    The variable "_orb_namespaces[2]" should eq namespace3
-    The variable "_orb_namespaces[3]" should eq namespace21
-    The variable "_orb_namespaces[4]" should eq namespace22
-    The variable "_orb_namespaces[5]" should eq namespace23
+    When call _orb_collect_available_namespaces
+    The variable "_orb_namespaces[0]" should eq a
+    The variable "_orb_namespaces[1]" should eq b
+    The variable "_orb_namespaces[2]" should eq c
+    The variable "_orb_namespaces[3]" should eq d
+    The variable "_orb_namespaces[4]" should eq e
+    The variable "_orb_namespaces[5]" should eq f
     The variable "_orb_namespaces[6]" should be undefined
+  End
+
+  It 'can collect nested namespaces for a parent namespace path'
+    _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+    When call _orb_collect_available_namespaces c
+    The variable "_orb_namespaces[0]" should eq ca
+    The variable "_orb_namespaces[1]" should eq cb
+    The variable "_orb_namespaces[2]" should be undefined
   End
 End
 
@@ -40,20 +48,33 @@ End
 Describe '_orb_collect_namespace_files'
   It 'stores single _orb_namespace_file and tracks directory'
     _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
-    _orb_namespace=namespace1
+    _orb_namespace_name=a
+    _orb_namespace_path=a
     When call _orb_collect_namespace_files
     The variable "_orb_namespace_files[@]" should eq "\
-spec/fixtures/functions/call/namespace.sh/ext/namespaces/namespace1.sh"
+spec/fixtures/functions/call/namespace.sh/ext/namespaces/a.sh"
     The variable "_orb_namespace_files_orb_dir_tracker[@]" should eq "\
 spec/fixtures/functions/call/namespace.sh/ext"
   End
   
   It 'stores directory with _orb_namespace_files and tracks directory'
     _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
-    _orb_namespace=namespace3
+    _orb_namespace_name=c
+    _orb_namespace_path=c
     When call _orb_collect_namespace_files
     The variable "_orb_namespace_files[@]" should eq "\
-spec/fixtures/functions/call/namespace.sh/ext/namespaces/namespace3/namespace3.sh"
+spec/fixtures/functions/call/namespace.sh/ext/namespaces/c/c.sh"
+    The variable "_orb_namespace_files_orb_dir_tracker[@]" should eq "\
+spec/fixtures/functions/call/namespace.sh/ext"
+  End
+
+  It 'stores nested namespace files from nested namespace path'
+    _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+    _orb_namespace_name=ca
+    _orb_namespace_path=c/namespaces/ca
+    When call _orb_collect_namespace_files
+    The variable "_orb_namespace_files[@]" should eq "\
+spec/fixtures/functions/call/namespace.sh/ext/namespaces/c/namespaces/ca/ca.sh"
     The variable "_orb_namespace_files_orb_dir_tracker[@]" should eq "\
 spec/fixtures/functions/call/namespace.sh/ext"
   End
@@ -85,13 +106,24 @@ End
 
 # _orb_get_current_namespace_from_args
 Describe '_orb_get_current_namespace_from_args'
-  _orb_namespaces=( test_namespace )
-
   Context 'when namespace defined'
     It 'returns first argument as namespace'
-      When call _orb_get_current_namespace_from_args test_namespace 1 2
+      _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+      When call _orb_get_current_namespace_from_args a 1 2
       The status should be success
-      The variable _orb_namespace should equal test_namespace
+      The variable _orb_namespace_name should equal a
+      The variable _orb_namespace_chain_name should equal a
+    End
+
+    It 'resolves nested namespace path and chain'
+      _orb_extensions=( spec/fixtures/functions/call/namespace.sh/ext )
+      _orb_collect_available_namespaces
+      When call _orb_get_current_namespace_from_args c ca caa my_function
+      The status should be success
+      The variable _orb_namespace_name should equal caa
+      The variable _orb_namespace_chain_name should equal "c ca caa"
+      The variable _orb_namespace_path should equal c/namespaces/ca/namespaces/caa
+      The variable "_orb_namespace_chain[@]" should equal "c ca caa"
     End
   End
 
@@ -104,7 +136,8 @@ Describe '_orb_get_current_namespace_from_args'
       It 'returns $ORB_DEFAULT_NAMESPACE'
         When call _orb_get_current_namespace_from_args hello 1 2
         The status should equal 2
-        The variable _orb_namespace should equal def_space
+        The variable _orb_namespace_name should equal def_space
+        The variable _orb_namespace_chain_name should equal def_space
       End
     End
 
@@ -126,20 +159,37 @@ Describe '_orb_get_current_namespace_from_args'
   End
 End
 
+# _orb_get_namespace_shift_steps
+Describe '_orb_get_namespace_shift_steps'
+  It 'returns number of namespace chain items'
+    _orb_namespace_chain=( a b c )
+    When call _orb_get_namespace_shift_steps
+    The output should equal 3
+  End
+
+  It 'returns zero when no chain items'
+    _orb_namespace_chain=()
+    When call _orb_get_namespace_shift_steps
+    The output should equal 0
+  End
+End
+
 # _orb_get_current_namespace_from_file_structure
 Describe '_orb_get_current_namespace_from_file_structure'
   It 'can get namespace from filename'
     _orb_get_current_sourcer_file_path() { echo namespaces/test_namespace.sh; }
     When call _orb_get_current_namespace_from_file_structure
     The status should be success
-    The variable _orb_namespace should equal test_namespace
+    The variable _orb_namespace_name should equal test_namespace
+    The variable _orb_namespace_chain_name should equal test_namespace
   End
 
   It 'can get namespace from nested files dirname'
-    _orb_get_current_sourcer_file_path() { echo namespaces/test_namespace/nest_file.sh; }
+    _orb_get_current_sourcer_file_path() { echo namespaces/test_namespace/namespaces/sub_namespace/nest_file.sh; }
     When call _orb_get_current_namespace_from_file_structure
     The status should be success
-    The variable _orb_namespace should equal test_namespace
+    The variable _orb_namespace_name should equal sub_namespace
+    The variable _orb_namespace_chain_name should equal "test_namespace sub_namespace"
   End
 
   It 'fails if not found'
@@ -163,20 +213,20 @@ Describe '_orb_validate_current_namespace'
   _orb_raise_error() { echo_fn "$@"; exit 1; }
 
   It 'raises if present and not variable name'
-    _orb_namespace="--asd"
+    _orb_namespace_name="--asd"
     When run _orb_validate_current_namespace
     The status should be failure
     The output should eq "_orb_raise_error not a valid namespace name"
   End
 
   It 'does not raise if not present'
-    _orb_namespace=""
+    _orb_namespace_name=""
     When run _orb_validate_current_namespace
     The status should be success
   End
 
   It 'does not raise if valid var name'
-    _orb_namespace="my_namespace"
+    _orb_namespace_name="my_namespace"
     When run _orb_validate_current_namespace
     The status should be success
   End

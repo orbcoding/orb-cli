@@ -23,11 +23,16 @@ declare -gA _orb_available_arg_nested_options=(
   # [Required:]="IfPresent: Help:"
 )
 
+declare -ga _orb_namespace_chain=()
+
 
 declare -g _orb_history_max_length=3
 
+# Variables that will be stored in history and available for subsequent orb calls
 declare -ga _orb_history_variables=(
-  _orb_namespace
+  _orb_namespace_name
+  _orb_namespace_chain_name
+  _orb_namespace_chain
   _orb_function_name
   _orb_function_descriptor
   _orb_function_exit_code
