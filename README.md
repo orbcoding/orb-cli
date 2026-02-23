@@ -42,7 +42,7 @@ my_function_orb=(
   1 = first "first inline argument"
   2 = second "second inline argument"
   -b = boolean "boolean flag"
-  -f 1 = flag_arg 'flagged argument'
+  -f 1 = value_flag 'value flag'
   -b- = block 'matches block between -b- ... -b-'
   ... = rest 'rest of arguments unless find --'
   -- = dash 'dash rest of arguments'
@@ -91,7 +91,7 @@ my_namespace->my_function - This is my function comment
   1     true       -         -    -       -          first inline argument
   2     true       -         -    -       -          second inline argument
   -b    false      false     -    -       -          boolean flag
-  -f 1  false      -         -    -       -          flagged argument
+  -f 1  false      -         -    -       -          value flag
   -b-   false      -         -    -       -          matches block between -b- ... -b-
   ...   true       -         -    -       -          rest of arguments unless find --
   --    true       -         -    -       -          dash rest of arguments
@@ -111,7 +111,7 @@ Here is a more advanced param declaration
   --verbose-flag = boolean "boolean flag"
     Required: true
     Multiple: true
-  -f 1 = flag_arg 'flagged argument'
+  -f 1 = flag_arg 'value flag'
     Default: 
       IfPresent: '$var1 || $var2 || fallback'
       Help: 'Some helping text'

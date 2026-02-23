@@ -76,7 +76,7 @@ Describe '_orb_collect_flag_arg'
     The output should equal "_orb_store_boolean_flag -f"
   End
 
-  It 'collects declared flagged args'
+  It 'collects declared value flags'
     _orb_declared_params=(-f)
     declare -A _orb_declared_param_suffixes=([-f]=1)
     When call _orb_collect_flag_arg -f

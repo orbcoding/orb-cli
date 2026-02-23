@@ -67,7 +67,7 @@ Describe '_orb_has_declared_value_flag'
   declare -A _orb_declared_param_aliases=()
   declare -A _orb_declared_param_suffixes=([-f]=1)
 
-  It 'succeeds when flagged arg declared'
+  It 'succeeds when value flag declared'
     When call _orb_has_declared_value_flag "-f"
     The status should be success
   End
@@ -124,17 +124,17 @@ Describe '_orb_has_declared_array_param'
   declare -A _orb_declared_option_start_indexes=([Multiple:]="- - - 0 - - -")
   declare -A _orb_declared_option_lengths=([Multiple:]="- - - 1 - - -")
   
-  It 'suceeds for flagged arg with suffix > 1'
+  It 'suceeds for value flag with suffix > 1'
     When call _orb_has_declared_array_param -m
     The status should be success
   End
 
-  It 'suceeds for flagged arg with catches multiple'
+  It 'suceeds for value flag with catches multiple'
     When call _orb_has_declared_array_param -a
     The status should be success
   End
 
-  It 'fails for flagged arg with suffix <= 1'
+  It 'fails for value flag with suffix <= 1'
     When call _orb_has_declared_array_param -f
     The status should be failure
   End

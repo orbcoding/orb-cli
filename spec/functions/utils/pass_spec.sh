@@ -65,7 +65,7 @@ Describe '_orb_pass_flag'
     End
   End
 
-  Context 'with flagged arg'
+  Context 'with value flag'
     _orb_has_declared_boolean_flag() { return 1; }
     _orb_has_declared_value_flag() { return 0; }
 

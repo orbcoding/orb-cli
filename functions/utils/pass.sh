@@ -7,7 +7,7 @@ orb_pass_orb=(
   "Pass commands to array eg: cmd=(my_cmd); orb_pass md_cmd -- -fa 1 2 --"
 
   -a 1 = _orb_arr_name "Array name where args are appended"
-  -v = _orb_only_val "Only pass values: ignore flag before flagged arg, block marks and --"
+  -v = _orb_only_val "Only pass values: ignore flag before value flag, block marks and --"
   -x = _orb_execute "exec array after adding args to -a arg array"
   -h = _orb_history_index "which caller history index to pass from"
     Default: 0

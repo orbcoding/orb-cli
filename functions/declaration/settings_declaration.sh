@@ -1,5 +1,5 @@
 _orb_settings_declaration=(
-  --help = _orb_setting_help
+  '-h|--help' = _orb_setting_help
     "Show help"
   -l 1 = _orb_setting_libraries
     "Additional orb library folders"

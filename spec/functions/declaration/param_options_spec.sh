@@ -211,7 +211,7 @@ Describe '_orb_get_declared_param_options_start_indexes'
     The variable "declared_param_options_start_indexes[@]" should equal "0 2"
   End
   
-  It 'handles flagged args'
+  It 'handles value flags'
     param_options_declaration=(
       Default: spec 
       Required: true
