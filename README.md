@@ -30,7 +30,7 @@ touch ~/.orb/namespaces/my_namespace.sh
 chmod +x ~/.orb/namespaces/my_namespace.sh
 ```
 
-2. Declare your function and arguments
+2. Declare your function and params
 
 ```BASH
 # ~/.orb/namespaces/my_namespace.sh
@@ -82,6 +82,7 @@ To show information about a function, use `orb --help "namespace" "function"`
 ```
 
 ```
+
 $ orb --help my_namespace my_function
 
 my_namespace->my_function - This is my function comment
@@ -97,8 +98,8 @@ my_namespace->my_function - This is my function comment
 ```
 ---
 
-## Argument options
-Here is a more advanced argument declaration
+## Param options
+Here is a more advanced param declaration
 
 ```BASH
  my_function_orb=(
@@ -118,21 +119,23 @@ Here is a more advanced argument declaration
  ); 
  function my_function() { ... }
 ```
- Note the available argument options
+ Note the available param options
  - `Required:`
-    - number, rest and dash arguments are required unless set `Required: false` or `Default:` 
-    - Flag and block args are optional unless set `Required: true`
+    - number, rest and dash params are required unless set `Required: false` or `Default:` 
+    - flag and block params are optional unless set `Required: true`
  - `In:` specifies a list of accepted values.
  - `Default:` specifies a default value. Also has nested options: 
    - `IfPresent:` Evaluates to first present variable or string.
    - `Help:` Help text for documentation.
- - `Catch:` Allows argument to assign undeclared special arguments, preventing orb from raising undeclared argument error. Available values: `any flag block dash`.
+ - `Catch:` Allows a param to accept undeclared special tokens, preventing orb from raising undeclared argument errors. Available values: `any flag block dash`.
 
 Note also:
- - If flags are single char you can pass multiple flag statements such as `-fa`.
- - Calling `orb my_function +f` sets its value to  `false`. This is useful if in combination with `Default: true`.
-- Numbered args and rest args also passed as inline args to function call.
- This allows expected argument access from bash positional arguments eg: `$1`, `$2`, `$@/$*`.
+ - Declaration aliases are supported: `-n|--name`.
+ - The first alias is canonical (for example `-n` for `-n|--name`).
+ - If flags are single char you can pass multiple flag statements such as `-vg`.
+ - Calling `orb my_function +f` sets its value to `false`. This is useful with `Default: true`.
+ - Numbered params and rest params are also passed as inline args to function call.
+   This allows expected positional access from bash (`$1`, `$2`, `$@/$*`).
 
 ---
 ## orb folders
