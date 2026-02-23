@@ -1,36 +1,36 @@
 # _orb_ prefix local vars to prevent shadowing
-_orb_get_declared_number_args_in_order() {
+_orb_get_declared_number_params_in_order() {
     local _orb_internal_nrs=()
     declare -n _orb_assign_ref=$1
 
-    local _orb_arg; for _orb_arg in "${_orb_declared_args[@]}"; do
-      orb_is_nr $_orb_arg && _orb_internal_nrs+=( $_orb_arg )
+    local _orb_param; for _orb_param in "${_orb_declared_params[@]}"; do
+      orb_is_nr $_orb_param && _orb_internal_nrs+=( $_orb_param )
     done
 
     IFS=$'\n' _orb_assign_ref=($(sort <<<"${_orb_internal_nrs[*]}")); unset IFS
 }
 
-# Resolve incoming runtime arg key to canonical declared key.
+# Resolve incoming runtime key to canonical declared param key.
 # Input examples: "+f", "-f", "--file"
 # Output examples: "-f" (if aliased), otherwise normalized input key.
-_orb_get_declared_arg_key() {
-  local arg=${1/+/-}
-  local aliases_name="_orb_declared_arg_aliases$_orb_variable_suffix"
+_orb_get_declared_param_key() {
+  local param=${1/+/-}
+  local aliases_name="_orb_declared_param_aliases$_orb_variable_suffix"
   declare -n aliases="$aliases_name"
 
-  if [[ -n ${aliases[$arg]} ]]; then
-    printf '%s\n' "${aliases[$arg]}" # safe output for - prefixed keys
+  if [[ -n ${aliases[$param]} ]]; then
+    printf '%s\n' "${aliases[$param]}" # safe output for - prefixed keys
   else
-    printf '%s\n' "$arg"
+    printf '%s\n' "$param"
   fi
 }
 
-_orb_get_arg_comment() {
+_orb_get_param_comment() {
   # Alias-aware lookup: "--file" and "-f" return the same declaration comment.
-	local arg=$(_orb_get_declared_arg_key "$1")
+  local param=$(_orb_get_declared_param_key "$1")
   declare -n declared_comments=_orb_declared_comments$_orb_variable_suffix
-  if [[ -n "${declared_comments[$arg]}" ]]; then
-    echo "${declared_comments[$arg]}"
+  if [[ -n "${declared_comments[$param]}" ]]; then
+    echo "${declared_comments[$param]}"
   else
     return 1
   fi
@@ -38,18 +38,18 @@ _orb_get_arg_comment() {
 
 # Default options values if not specified
 # _orb_ prefix local vars to prevent shadowing
-_orb_get_default_arg_option_value() {
-  # Alias-aware: option defaults are computed on canonical arg key.
-  local _orb_arg=$(_orb_get_declared_arg_key "$1")
+_orb_get_default_param_option_value() {
+  # Alias-aware: option defaults are computed on canonical param key.
+  local _orb_param=$(_orb_get_declared_param_key "$1")
   local _orb_opt=$2
 	declare -n _orb_assign_ref=$3
 
 	case $_orb_opt in
 		'Required:')
-			_orb_assign_ref=$(orb_is_any_flag $_orb_arg || orb_is_block $_orb_arg || orb_is_dash $_orb_arg && echo false || echo true)
+			_orb_assign_ref=$(orb_is_any_flag $_orb_param || orb_is_block $_orb_param || orb_is_dash $_orb_param && echo false || echo true)
     ;;
     'Default:')
-      _orb_has_declared_boolean_flag $_orb_arg && _orb_assign_ref=false
+      _orb_has_declared_boolean_flag $_orb_param && _orb_assign_ref=false
     ;;
 	esac
 }
@@ -58,13 +58,13 @@ _orb_get_default_arg_option_value() {
 # This will give the final computed value with them taken into account
 # As we are assigning to variable with uncertain name
 # _orb_ prefix all local vars to prevent shadowing
-_orb_get_arg_option_value() {
-  # Alias-aware: option values always come from canonical arg declaration entry.
-  local _orb_arg=$(_orb_get_declared_arg_key "$1")
+_orb_get_param_option_value() {
+  # Alias-aware: option values always come from canonical param declaration entry.
+  local _orb_param=$(_orb_get_declared_param_key "$1")
   local _orb_opt=$2
   declare -n _orb_declaration_store=$3
 
-  local _orb_declaration; _orb_get_arg_option_declaration $_orb_arg $_orb_opt _orb_declaration || return 1
+  local _orb_declaration; _orb_get_param_option_declaration $_orb_param $_orb_opt _orb_declaration || return 1
   
   # Has no nested options
   if [[ "$_orb_opt" != Default: ]]; then
@@ -73,9 +73,9 @@ _orb_get_arg_option_value() {
   fi
 
   # If finding present option with present value or plain default value
-  if _orb_get_arg_nested_option_declaration Default: IfPresent: _orb_declaration _orb_present_store && \
+  if _orb_get_param_nested_option_declaration Default: IfPresent: _orb_declaration _orb_present_store && \
     orb_if_present _orb_default_value "${_orb_present_store[*]}" || \
-    _orb_get_arg_nested_option_declaration Default: false _orb_declaration _orb_default_value; then
+    _orb_get_param_nested_option_declaration Default: false _orb_declaration _orb_default_value; then
     _orb_declaration_store=(${_orb_default_value[@]})
     return
   fi
@@ -85,13 +85,13 @@ _orb_get_arg_option_value() {
 
 # If called without assignment param $3 will just check if has value
 # _orb_ prefix local vars to prevent shadowing 
-_orb_get_arg_option_declaration() {
+_orb_get_param_option_declaration() {
   # Alias-aware index lookup into mixed option-value storage arrays.
-  local _orb_arg=$(_orb_get_declared_arg_key "$1")
+  local _orb_param=$(_orb_get_declared_param_key "$1")
   local _orb_opt=$2
   declare -n _orb_option_start_indexes=_orb_declared_option_start_indexes$_orb_variable_suffix
 
-  local _orb_i=$(orb_index_of $_orb_arg _orb_declared_args$_orb_variable_suffix)
+  local _orb_i=$(orb_index_of $_orb_param _orb_declared_params$_orb_variable_suffix)
   local _orb_start_is=(${_orb_option_start_indexes[$_orb_opt]})
   local _orb_start_i="${_orb_start_is[$_orb_i]}"
 
@@ -110,12 +110,12 @@ _orb_get_arg_option_declaration() {
 }
 
 # _orb_ prefix to prevent shadowing
-_orb_get_arg_nested_option_declaration() {
+_orb_get_param_nested_option_declaration() {
   local _orb_opt="$1"
   local _orb_nested_opt="$2"
   declare -n _orb_raw_opts="$3"
   declare -n _orb_store_ref="$4"
-  local _orb_available_opts=(${_orb_available_arg_nested_options[$_orb_opt]})
+  local _orb_available_opts=(${_orb_available_param_nested_options[$_orb_opt]})
   local _orb_on_opt=false
   local _orb_tmp_store
 
@@ -151,7 +151,7 @@ _orb_get_arg_nested_option_declaration() {
 
 
 # _orb_get_function_option_value() {
-#   local arg=$1
+#   local param=$1
 #   local opt=$2
 #   declare -n value=$3
 

@@ -18,7 +18,7 @@ declare -A _orb_declared_vars=(
   [-b-]=block 
   [...]=rest
 )
-_orb_declared_args=(1 -f -- -b- ...)
+_orb_declared_params=(1 -f -- -b- ...)
 
 # _orb_store_arg_value
 Describe '_orb_store_arg_value'
@@ -72,7 +72,7 @@ Describe '_orb_store_boolean_flag'
   End
 
   It 'stores verbose alias on canonical key'
-    declare -A _orb_declared_arg_aliases=([--flag]=-f [-f]=-f)
+    declare -A _orb_declared_param_aliases=([--flag]=-f [-f]=-f)
     When call _orb_store_boolean_flag --flag
     _orb_assign_stored_arg_values_to_declared_variables
     The variable flag should equal true
@@ -95,7 +95,7 @@ End
 # _orb_store_flagged_arg
 Describe '_orb_store_flagged_arg'
   args_remaining=(-f followed by args)
-  declare -A _orb_declared_arg_suffixes=([-f]=3)
+  declare -A _orb_declared_param_suffixes=([-f]=3)
 
   _orb_store_arg_value() { spec_args+=($(echo_fn $@)); }
   _orb_raise_invalid_arg() { spec_args+=($(echo_fn $@)); }

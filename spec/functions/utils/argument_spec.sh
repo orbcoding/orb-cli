@@ -187,35 +187,35 @@ Describe 'orb_is_dash'
   End
 End
 
-# orb_is_input_arg
-Describe 'orb_is_input_arg'
+# orb_is_base_param
+Describe 'orb_is_base_param'
   It 'succeeds for flag'
-    When call orb_is_input_arg "-f"
+    When call orb_is_base_param "-f"
     The status should be success
   End
 
   It 'succeeds for verbose_flag'
-    When call orb_is_input_arg "--verbose_flag"
+    When call orb_is_base_param "--verbose_flag"
     The status should be success
   End
 
   It 'succeeds for block'
-    When call orb_is_input_arg "-b-"
+    When call orb_is_base_param "-b-"
     The status should be success
   End
 
   It 'succeeds for rest'
-    When call orb_is_input_arg "..."
+    When call orb_is_base_param "..."
     The status should be success
   End
 
   It 'succeeds for dash'
-    When call orb_is_input_arg "--"
+    When call orb_is_base_param "--"
     The status should be success
   End
 
   It 'fails with other'
-    When call orb_is_input_arg '_f'
+    When call orb_is_base_param '_f'
     The status should be failure
   End
 End
@@ -251,20 +251,20 @@ Describe 'orb_is_flag_or_alias_token'
   End
 End
 
-# orb_is_input_arg_token
-Describe 'orb_is_input_arg_token'
+# orb_is_param_token
+Describe 'orb_is_param_token'
   It 'succeeds for normal input arg tokens'
-    When call orb_is_input_arg_token '...'
+    When call orb_is_param_token '...'
     The status should be success
   End
 
   It 'succeeds for alias flag token'
-    When call orb_is_input_arg_token '-f|--file'
+    When call orb_is_param_token '-f|--file'
     The status should be success
   End
 
   It 'fails for invalid alias token'
-    When call orb_is_input_arg_token '-f|1'
+    When call orb_is_param_token '-f|1'
     The status should be failure
   End
 End

@@ -9,25 +9,6 @@ function orb_function_declared() {
 	declare -f -F $1 > /dev/null
 }
 
-
-orb_if_present_orb=(
-	"Stores first present variable to specified arr"
-	Raw: true
-
-	1 = "Variable name"
-	... = "Variables to check"
-)
-# function orb_if_present() {
-# 	declare -n _orb_arr_ref="$1" && shift
-
-# 	local _orb_var; for _orb_var in "$@"; do
-# 		declare -n _orb_var_ref=$_orb_var
-# 		[[ -n "$_orb_var_ref" ]] && _orb_arr_ref="${_orb_arg[@]}" && return 0
-# 	done
-
-# 	return 1
-# }
-
 function orb_index_of() {
 	local _orb_arr_value="$1"
 	declare -n _orb_arr_ref="$2"

@@ -55,8 +55,15 @@ declare -A orb_is_dash_args=(
 	[[ "$1" == "--" ]]
 }
 
-function orb_is_input_arg() {
+function orb_is_base_param() {
 	orb_is_nr $1 || orb_is_any_flag $1 || orb_is_block $1 || orb_is_rest $1 || orb_is_dash $1
+}
+
+# Declaration-token validator.
+# Accepts any standard input arg token (nr/flag/block/rest/dash)
+# OR an alias flag token like "-f|--file".
+function orb_is_param_token() {
+	orb_is_base_param "$1" || ([[ "$1" == *"|"* ]] && orb_is_flag_or_alias_token "$1")
 }
 
 # Validate that every alias in a pipe token is a real flag token.
@@ -89,13 +96,6 @@ function orb_split_flag_aliases() {
 	else
 		assign_ref=("$token")
 	fi
-}
-
-# Declaration-token validator.
-# Accepts any standard input arg token (nr/flag/block/rest/dash)
-# OR an alias flag token like "-f|--file".
-function orb_is_input_arg_token() {
-	orb_is_input_arg "$1" || ([[ "$1" == *"|"* ]] && orb_is_flag_or_alias_token "$1")
 }
 
 function orb_is_valid_variable_name() {

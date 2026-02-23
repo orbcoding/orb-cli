@@ -10,7 +10,7 @@ _orb_collect_function_args() {
 	local args_count=1
 	local args_remaining=( "$@" ) # array of input args each quoted
 	
-	if [[ ${#_orb_declared_args[@]} == 0 ]]; then
+	if [[ ${#_orb_declared_params[@]} == 0 ]]; then
 		if [[ ${#args_remaining[@]} != 0 ]]; then
 			_orb_raise_error "does not accept arguments"
 		else # no args to parse
@@ -44,7 +44,7 @@ _orb_collect_flag_arg() { # $1 input_arg
 
 	if _orb_has_declared_boolean_flag $arg; then
 		_orb_store_boolean_flag "$arg"
-	elif _orb_has_declared_flagged_arg "$arg"; then
+	elif _orb_has_declared_value_flag "$arg"; then
 		_orb_store_flagged_arg "$arg"
 	else
 		local invalid_flags=()
@@ -59,7 +59,7 @@ _orb_collect_flag_arg() { # $1 input_arg
 _orb_collect_block_arg() {
 	local arg=$1
 
-	if _orb_has_declared_arg "$arg"; then
+	if _orb_has_declared_param "$arg"; then
 		_orb_store_block "$arg"
 	else
 		_orb_try_inline_arg_fallback "$arg" "$arg"
@@ -69,11 +69,11 @@ _orb_collect_block_arg() {
 _orb_collect_inline_arg() {
 	local arg=$1
 	# add numbered args to args and _args_nrs
-	if [[ "$arg" == '--' ]] && _orb_has_declared_arg $arg; then
+	if [[ "$arg" == '--' ]] && _orb_has_declared_param $arg; then
 		_orb_store_dash
-	elif _orb_has_declared_arg "$args_count" && _orb_is_valid_arg "$args_count" "$arg"; then
+	elif _orb_has_declared_param "$args_count" && _orb_is_valid_arg "$args_count" "$arg"; then
 		_orb_store_inline_arg "$arg"
-	elif _orb_has_declared_arg '...'; then
+	elif _orb_has_declared_param '...'; then
 		_orb_store_rest
 	else
 		_orb_raise_invalid_arg "$args_count with value ${1:-\"\"}"
@@ -85,9 +85,9 @@ _orb_try_inline_arg_fallback() {
 	local arg=$1
 	local failed_arg=$2 # usually the same unless multiflag
 
-	if _orb_has_declared_arg "$args_count" && _orb_is_valid_arg "$args_count" "$arg" && _orb_arg_catches "$args_count" "$arg"; then
+	if _orb_has_declared_param "$args_count" && _orb_is_valid_arg "$args_count" "$arg" && _orb_param_catches "$args_count" "$arg"; then
 		_orb_store_inline_arg "$arg"
-	elif _orb_has_declared_arg "..." && _orb_arg_catches "..." "$arg"; then
+	elif _orb_has_declared_param "..." && _orb_param_catches "..." "$arg"; then
 		_orb_store_rest
 	else
 		_orb_raise_invalid_arg "$failed_arg"
@@ -106,7 +106,7 @@ _orb_try_collect_multiple_flags() { # $1 arg
 
 	# collect all invalid flags for verbose error
 	local flag; for flag in $flags; do
-		if _orb_has_declared_arg "$flag"; then
+		if _orb_has_declared_param "$flag"; then
 			valid_flags+=($flag)
 		else
 			invalid_flags+=($flag)
@@ -119,7 +119,7 @@ _orb_try_collect_multiple_flags() { # $1 arg
 	local steps=1 # to shift
 
 	local flag; for flag in "${valid_flags[@]}"; do
-		local suffix=${_orb_declared_arg_suffixes[$flag]}
+		local suffix=${_orb_declared_param_suffixes[$flag]}
 
 		if [[ -z "$suffix" ]]; then 
 			_orb_store_boolean_flag "$flag" 0

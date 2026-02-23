@@ -15,7 +15,7 @@ End
 
 # _orb_is_valid_in
 Describe '_orb_is_valid_in'
-  _orb_declared_args=(1)
+  _orb_declared_params=(1)
   declare -a _orb_declared_option_values=(1 2 3 4 5) 
 
   Context 'with In declaration'

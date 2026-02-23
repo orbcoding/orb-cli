@@ -1,6 +1,6 @@
 Include functions/declaration/function.sh
 Include functions/declaration/function_options.sh
-Include functions/declaration/arguments.sh
+Include functions/declaration/params.sh
 Include functions/declaration/validation.sh
 Include functions/declaration/checkers.sh
 Include functions/declaration/getters.sh
@@ -11,24 +11,24 @@ Include scripts/initialize_variables.sh
 
 # _orb_parse_declaration
 Describe '_orb_parse_function_declaration'
-  Include functions/declaration/argument_options.sh
+  Include functions/declaration/param_options.sh
 
   Context 'nested functions'
     _orb_prevalidate_declaration() { spec_fns+=( $(echo_fn) ); }
     _orb_get_declared_function_options() { spec_fns+=( $(echo_fn) );}
-    _orb_get_declared_args() { spec_fns+=( $(echo_fn) );}
+    _orb_get_declared_params() { spec_fns+=( $(echo_fn) );}
     _orb_parse_declared_function_options() { spec_fns+=( $(echo_fn) );}
-    _orb_parse_declared_args() { spec_fns+=( $(echo_fn) );}
+    _orb_parse_declared_params() { spec_fns+=( $(echo_fn) );}
 
     It 'calls correctly'
       _orb_function_declaration=(1 = first)
       When call _orb_parse_function_declaration
-      The variable "spec_fns[@]" should equal "_orb_prevalidate_declaration _orb_get_declared_function_options _orb_get_declared_args _orb_parse_declared_function_options _orb_parse_declared_args"
+      The variable "spec_fns[@]" should equal "_orb_prevalidate_declaration _orb_get_declared_function_options _orb_get_declared_params _orb_parse_declared_function_options _orb_parse_declared_params"
     End
 
     It 'does not parse args if $2 = false'
       When call _orb_parse_function_declaration _orb_function_declaration false
-      The variable "spec_fns[@]" should equal "_orb_prevalidate_declaration _orb_get_declared_function_options _orb_get_declared_args _orb_parse_declared_function_options"
+      The variable "spec_fns[@]" should equal "_orb_prevalidate_declaration _orb_get_declared_function_options _orb_get_declared_params _orb_parse_declared_function_options"
     End
   End
 
@@ -52,7 +52,7 @@ Describe '_orb_parse_function_declaration'
     When call _orb_parse_function_declaration
     The variable "_orb_declared_comments[function]" should equal "Function comment"
     The variable "_orb_declared_raw" should equal true
-    The variable "_orb_declared_args[@]" should equal "1 -a"
+    The variable "_orb_declared_params[@]" should equal "1 -a"
     The variable "_orb_declared_comments[1]" should equal "This is first comment"
     The variable "_orb_declared_comments[-a]" should equal "This is flagged comment"
 
@@ -111,8 +111,8 @@ Describe '_orb_get_declared_function_options'
   End
 End
 
-# _orb_get_declared_args
-Describe '_orb_get_declared_args'
+# _orb_get_declared_params
+Describe '_orb_get_declared_params'
   declaration=(
     "Comment"
     Raw: true
@@ -120,21 +120,21 @@ Describe '_orb_get_declared_args'
     1 = first
   )
 
-  It "gets declared args"
+  It "gets declared params"
     _orb_get_declared_function_options
-    When call _orb_get_declared_args
-    The variable "declared_args[0]" should equal "1"
-    The variable "declared_args[@]" should equal "1 = first"
+    When call _orb_get_declared_params
+    The variable "declared_params[0]" should equal "1"
+    The variable "declared_params[@]" should equal "1 = first"
   End
 
-  It 'gets declared args when no function options declared'
+  It 'gets declared params when no function options declared'
     declaration=(
       1 = first
     )
 
     _orb_get_declared_function_options
-    When call _orb_get_declared_args
-    The variable "declared_args[0]" should equal "1"
-    The variable "declared_args[@]" should equal "1 = first"
+    When call _orb_get_declared_params
+    The variable "declared_params[0]" should equal "1"
+    The variable "declared_params[@]" should equal "1 = first"
   End
 End

@@ -24,8 +24,8 @@ function orb_pass() {
 
   if [[ -n $_orb_arr_name ]]; then
     declare -n _orb_arr=$_orb_arr_name
-    [[ -n "${_orb_arr_els[@]}" ]] && _orb_arr+=("${_orb_arr_els[@]}")
-  elif [[ -n "${_orb_arr_els[@]}" ]]; then
+    [[ -n "${_orb_arr_els[*]}" ]] && _orb_arr+=("${_orb_arr_els[@]}")
+  elif [[ -n "${_orb_arr_els[*]}" ]]; then
     # rests to be executed
     declare -n _orb_arr=_orb_arr_els
   else
@@ -33,7 +33,7 @@ function orb_pass() {
   fi
 
   [[ -z $_orb_function_name_history_0 ]] && _orb_raise_error 'no parent orb function to pass args from'
-  [[ -z ${_orb_declared_args_history_0[@]} ]] && _orb_raise_error "$_orb_function_descriptor_history_0 has no arguments to pass"
+  [[ -z "${_orb_declared_params_history_0[*]}" ]] && _orb_raise_error "$_orb_function_descriptor_history_0 has no arguments to pass"
 
   local _orb_arg; for _orb_arg in "${_orb_pass[@]}"; do
     if orb_is_any_flag "$_orb_arg"; then
@@ -77,7 +77,7 @@ _orb_pass_flag() { # $1 = flag arg/args
     if _orb_has_declared_boolean_flag "$_orb_flag"; then
       # Only pass if true
       _orb_pass_arg $_orb_flag "" "" true
-    elif _orb_has_declared_flagged_arg "$_orb_flag"; then
+    elif _orb_has_declared_value_flag "$_orb_flag"; then
       # Add flag prefix unless only val
       $_orb_only_val && _orb_pass_arg $_orb_flag || _orb_pass_arg $_orb_flag $_orb_flag 
     fi
@@ -107,12 +107,12 @@ _orb_pass_arg() {
   local _orb_suffix=$3
   local _orb_pass_self_if_eq="$4"
 
-  _orb_has_declared_arg "$_orb_arg" || _orb_raise_undeclared "$_orb_arg"
+  _orb_has_declared_param "$_orb_arg" || _orb_raise_undeclared "$_orb_arg"
   _orb_has_arg_value $_orb_arg || return 1
   local _orb_value; _orb_get_arg_value $_orb_arg _orb_value
 
   if [[ -n "$_orb_pass_self_if_eq" ]]; then 
-    [[ "${_orb_value[@]}" != "$_orb_pass_self_if_eq" ]] && return 1 
+    [[ "${_orb_value[*]}" != "$_orb_pass_self_if_eq" ]] && return 1 
     _orb_value=("$_orb_arg")
   fi
 

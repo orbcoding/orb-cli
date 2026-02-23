@@ -5,7 +5,7 @@ _orb_is_valid_arg() { # $1 arg_key, $2 arg
 _orb_is_valid_in() {
 	local arg=$1
 	local val=(${@:2})
-	local in_arr=(); _orb_get_arg_option_value $arg "In:" in_arr || return 0
+	local in_arr=(); _orb_get_param_option_value $arg "In:" in_arr || return 0
 
 	orb_in_arr "$val" in_arr
 }
@@ -15,16 +15,16 @@ _orb_raise_invalid_arg() { # $1 arg_key $2 arg_value/required
 	[[ ${1:0:1} == '-' ]] && ! orb_is_block "$1" && arg='flags' || arg='args'
 	local msg="invalid $arg: $1"
 
-	msg+="\n\n$(_orb_print_args_explanation)"
+	msg+="\n\n$(_orb_print_params_explanation)"
 
 	_orb_raise_error "$msg"
 }
 
 
 _orb_post_validate_args() {
-	local arg; for arg in "${_orb_declared_args[@]}"; do
-		local required; _orb_get_arg_option_value $arg Required: required
-		[[ $required == true ]] && ! _orb_has_arg_value "$arg" && _orb_raise_error "$arg is required"
+	local param; for param in "${_orb_declared_params[@]}"; do
+		local required; _orb_get_param_option_value $param Required: required
+		[[ $required == true ]] && ! _orb_has_arg_value "$param" && _orb_raise_error "$param is required"
 	done
 }
 

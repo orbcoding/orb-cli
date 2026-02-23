@@ -11,7 +11,7 @@ Describe '_orb_get_arg_value'
   declare -A _orb_args_values_lengths=([1]=5 [...]=2 [-m]=2 [-f]=2)
   _orb_args_values=(1 2 3 4 5 1 2 6 7 9 0)
 
-  _orb_declared_args=(1 ... -m -f)
+  _orb_declared_params=(1 ... -m -f)
   _orb_declared_option_values=(true)
   declare -A _orb_declared_option_start_indexes=([Multiple:]="- - 0 -")
   declare -A _orb_declared_option_lengths=([Multiple:]="- - 1 -")

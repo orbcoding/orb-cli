@@ -69,7 +69,7 @@ _orb_print_namespace_help() {
 
 _orb_print_function_help() {
 	_orb_print_orb_function_and_comment
-	local msg=$(_orb_print_args_explanation)
+	local msg=$(_orb_print_params_explanation)
 	[[ -n "$msg" ]] && echo -e "\n$msg"
 	return 0
 }
@@ -82,34 +82,34 @@ _orb_print_orb_function_and_comment() {
 	echo "$(orb_bold "$function_descriptor") $([[ -n "$comment" ]] && echo "- $comment")"
 }
 
-_orb_print_args_explanation() {
-	declare -n declared_args=_orb_declared_args$_orb_variable_suffix
-	[[ ${#declared_args[@]} == 0 ]] && return 1
+_orb_print_params_explanation() {
+	declare -n declared_params=_orb_declared_params$_orb_variable_suffix
+	[[ ${#declared_params[@]} == 0 ]] && return 1
 
 	OLD_IFS=$IFS
-	IFS='§'; local msg="$(orb_bold '§')${_orb_available_arg_options_help[*]}$(orb_bold '§')\n"
+	IFS='§'; local msg="$(orb_bold '§')${_orb_available_param_options_help[*]}$(orb_bold '§')\n"
 	IFS=$OLD_IFS
 
-	local arg; for arg in "${declared_args[@]}"; do
-		local msg+="$arg"
+	local param; for param in "${declared_params[@]}"; do
+		local msg+="$param"
 
-	 	if _orb_has_declared_flagged_arg $arg; then
-			declare -n declared_suffixes=_orb_declared_arg_suffixes$_orb_variable_suffix
-			msg+=" ${declared_suffixes[$arg]}"
+	 	if _orb_has_declared_value_flag $param; then
+			declare -n declared_suffixes=_orb_declared_param_suffixes$_orb_variable_suffix
+			msg+=" ${declared_suffixes[$param]}"
 		fi
 
-		local opt; for opt in "${_orb_available_arg_options_help[@]}"; do
+		local opt; for opt in "${_orb_available_param_options_help[@]}"; do
 			local value=()
 			
-			_orb_get_arg_option_declaration $arg $opt value
+			_orb_get_param_option_declaration $param $opt value
 
-			msg+="§$([[ -n "${value[@]}" ]] && echo "${value[@]}" || echo '-')"
+			msg+="§$([[ -n "${value[*]}" ]] && echo "${value[@]}" || echo '-')"
 		done
 
-		local comment; comment="$(_orb_get_arg_comment $arg)"
+		local comment; comment="$(_orb_get_param_comment $param)"
 		if [[ $? == 1 ]]; then
 			declare -n declared_vars=_orb_declared_vars$_orb_variable_suffix
-			comment=${declared_vars[$arg]}
+			comment=${declared_vars[$param]}
 		fi
 
 		msg+="§$comment\n"

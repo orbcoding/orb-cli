@@ -6,9 +6,9 @@ _orb_extract_orb_settings_arguments() {
 
   local arg; for arg in "${args[@]}"; do
     if orb_is_any_flag $arg; then
-      if _orb_has_declared_arg $arg; then
+      if _orb_has_declared_param $arg; then
         last_flag_i=$i
-        last_flag_suffix=${_orb_declared_arg_suffixes[$arg]}
+        last_flag_suffix=${_orb_declared_param_suffixes[$arg]}
       else
         _orb_raise_invalid_orb_settings_arg ${args[$i]}
       fi
@@ -34,8 +34,8 @@ _orb_raise_invalid_orb_settings_arg() {
   local error_msg="invalid option $invalid_arg\n\nAvailable options:\n\n"
 
   local settings
-  local arg; for arg in "${_orb_declared_args[@]}"; do
-    settings+="  $arg; ${_orb_declared_comments[$arg]}\n"
+  local param; for param in "${_orb_declared_params[@]}"; do
+    settings+="  $param; ${_orb_declared_comments[$param]}\n"
   done
 
   error_msg+=$(echo -e "$settings" | column -tes ';')

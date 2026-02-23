@@ -67,7 +67,7 @@ Describe '_orb_pass_flag'
 
   Context 'with flagged arg'
     _orb_has_declared_boolean_flag() { return 1; }
-    _orb_has_declared_flagged_arg() { return 0; }
+    _orb_has_declared_value_flag() { return 0; }
 
     It 'calls _orb_pass_arg with correct params'
       When call _orb_pass_flag -f
@@ -118,7 +118,7 @@ End
 
 # _orb_pass_arg
 Describe '_orb_pass_arg'
-  _orb_has_declared_arg() { return 0; }
+  _orb_has_declared_param() { return 0; }
   _orb_has_arg_value() { return 0; }
 
   _orb_get_arg_value() {
@@ -155,7 +155,7 @@ Describe '_orb_pass_arg'
   End
 
   It 'raises undeclared if undeclared'
-    _orb_has_declared_arg() { return 1; }
+    _orb_has_declared_param() { return 1; }
     When run _orb_pass_arg ...
     The status should be failure
     The variable "_orb_arr[@]" should be undefined 

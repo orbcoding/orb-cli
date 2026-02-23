@@ -19,7 +19,7 @@ _orb_get_arg_value() {
 		_orb_val+=("${_orb_values[@]:${_orb_start_i}:${_orb_length}}")
 	done
 
-	if _orb_has_declared_array_arg $_orb_arg; then
+	if _orb_has_declared_array_param $_orb_arg; then
 		_orb_assign_ref=("${_orb_val[@]}")
 	else
 		_orb_assign_ref="${_orb_val[*]}"

@@ -2,23 +2,23 @@
 declare -ga _orb_available_function_options=( Raw: )
 declare -ga _orb_available_function_option_raw_values=( true false )
 
-declare -ga _orb_available_arg_options=( Required: Default: In: Catch: Multiple: )
-declare -ga _orb_available_arg_options_help=( Required: Default: In: Catch: Multiple: )
+declare -ga _orb_available_param_options=( Required: Default: In: Catch: Multiple: )
+declare -ga _orb_available_param_options_help=( Required: Default: In: Catch: Multiple: )
 
-declare -ga _orb_available_arg_options_number_arg=( Required: Default: In: )
-declare -ga _orb_available_arg_options_boolean_flag=( Required: Default: )
-declare -ga _orb_available_arg_options_flag_arg=( Required: Default: Multiple: In: )
-# flag args with suffix > 1 
-declare -ga _orb_available_arg_options_array_flag_arg=( Required: Default: Multiple: )
-declare -ga _orb_available_arg_options_block=( Required: Default: Multiple: )
-declare -ga _orb_available_arg_options_dash=( Required: Default: )
-declare -ga _orb_available_arg_options_rest=( Required: Default: Catch: )
+declare -ga _orb_available_param_options_number=( Required: Default: In: )
+declare -ga _orb_available_param_options_boolean_flag=( Required: Default: )
+declare -ga _orb_available_param_options_value_flag=( Required: Default: Multiple: In: )
+# flag params with suffix > 1 
+declare -ga _orb_available_param_options_array_flag=( Required: Default: Multiple: )
+declare -ga _orb_available_param_options_block=( Required: Default: Multiple: )
+declare -ga _orb_available_param_options_dash=( Required: Default: )
+declare -ga _orb_available_param_options_rest=( Required: Default: Catch: )
 
-declare -ga _orb_available_arg_option_catch_values=( any flag block dash )
-declare -ga _orb_available_arg_option_required_values=( true false )
-declare -ga _orb_available_arg_option_multiple_values=( true false )
+declare -ga _orb_available_param_option_catch_values=( any flag block dash )
+declare -ga _orb_available_param_option_required_values=( true false )
+declare -ga _orb_available_param_option_multiple_values=( true false )
 
-declare -gA _orb_available_arg_nested_options=(
+declare -gA _orb_available_param_nested_options=(
   [Default:]="IfPresent: Help:"
   # [Required:]="IfPresent: Help:"
 )
@@ -44,9 +44,9 @@ declare -ga _orb_history_variables=(
 
   _orb_declared_raw
 
-  _orb_declared_args
-  _orb_declared_arg_aliases
-  _orb_declared_arg_suffixes
+  _orb_declared_params
+  _orb_declared_param_aliases
+  _orb_declared_param_suffixes
   _orb_declared_vars
   _orb_declared_comments
 

@@ -30,7 +30,7 @@ Describe '_orb_collect_function_args'
   End
 
   Context 'args declared'
-    _orb_declared_args=(
+    _orb_declared_params=(
       var = 1 
     )
 
@@ -70,22 +70,22 @@ Describe '_orb_collect_flag_arg'
   _orb_try_inline_arg_fallback() { echo_fn $@; }
 
   It 'collects declared boolean flag'
-    _orb_declared_args=(-f)
+    _orb_declared_params=(-f)
     When call _orb_collect_flag_arg -f
     The status should be success
     The output should equal "_orb_store_boolean_flag -f"
   End
 
   It 'collects declared flagged args'
-    _orb_declared_args=(-f)
-    declare -A _orb_declared_arg_suffixes=([-f]=1)
+    _orb_declared_params=(-f)
+    declare -A _orb_declared_param_suffixes=([-f]=1)
     When call _orb_collect_flag_arg -f
     The status should be success
     The output should equal "_orb_store_flagged_arg -f"
   End
   
   It 'tries to parse multiple flags and inline args if no flags declared'
-    _orb_declared_args=(-f)
+    _orb_declared_params=(-f)
     When call _orb_collect_flag_arg -a
     The status should be success
     The output should equal "_orb_try_inline_arg_fallback -a -a"
@@ -97,7 +97,7 @@ End
 Describe '_orb_collect_block_arg'
   _orb_store_block() { echo_fn $@; }
   _orb_try_inline_arg_fallback() { echo_fn $@; }
-  _orb_declared_args=(-b-)
+  _orb_declared_params=(-b-)
 
   It 'collects blocks'
     When call _orb_collect_block_arg -b-
@@ -122,28 +122,28 @@ Describe '_orb_collect_inline_arg'
   _orb_raise_invalid_arg() { echo_fn $@ && return 1; }
 
   It 'collects dash rest first'
-    _orb_declared_args=(--)
+    _orb_declared_params=(--)
     When call _orb_collect_inline_arg --
     The status should be success
     The output should equal "_orb_store_dash"
   End
 
   It 'collects numbered args'
-    _orb_declared_args=(1)
+    _orb_declared_params=(1)
     When call _orb_collect_inline_arg 1
     The status should be success
     The output should equal "_orb_store_inline_arg 1"
   End
 
   It 'falls back to rest if declared'
-    _orb_declared_args=(...)
+    _orb_declared_params=(...)
     When call _orb_collect_inline_arg 1
     The status should be success
     The output should equal "_orb_store_rest"
   End
 
   It 'fails if no rest fallback declared'
-    _orb_declared_args=(-f)
+    _orb_declared_params=(-f)
     When call _orb_collect_inline_arg 1
     The status should be failure
     The output should equal "_orb_raise_invalid_arg 1 with value 1"
@@ -158,7 +158,7 @@ Describe '_orb_try_inline_arg_fallback'
   _orb_store_rest() { echo_fn $@; }
   _orb_raise_invalid_arg() { echo_fn "$@"; exit 1; }
   args_count=1
-  _orb_declared_args=(1 ...)
+  _orb_declared_params=(1 ...)
   declare -a _orb_declared_option_values=(flag block dash)
 
   It 'assigns flag to nr arg if catch declared'
@@ -206,15 +206,15 @@ Describe '_orb_try_collect_multiple_flags'
   End
 
   It 'succeeds on defined flags'
-    _orb_declared_args=(-f -a)
+    _orb_declared_params=(-f -a)
     When call _orb_try_collect_multiple_flags -fa
     The status should be success
     The variable "spec_fns[@]" should equal "_orb_store_boolean_flag -f 0 _orb_store_boolean_flag -a 0 _orb_shift_args 1"
   End
 
   It 'shifts args according to highest suffix + 1'
-    _orb_declared_args=(-f -a)
-    declare -A _orb_declared_arg_suffixes=([-f]=3 [-a]=2)
+    _orb_declared_params=(-f -a)
+    declare -A _orb_declared_param_suffixes=([-f]=3 [-a]=2)
     When call _orb_try_collect_multiple_flags -fa
     The status should be success
     The variable "spec_fns[@]" should equal "_orb_store_flagged_arg -f 0 _orb_store_flagged_arg -a 0 _orb_shift_args 4"

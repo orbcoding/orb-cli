@@ -98,8 +98,8 @@ End
 Describe '_orb_print_function_help'
 End
 
-# _orb_print_args_explanation
-Describe '_orb_print_args_explanation'
+# _orb_print_params_explanation
+Describe '_orb_print_params_explanation'
   Include "$_orb_root/scripts/call/variables.sh"
 
   _orb_function_declaration=(
@@ -117,14 +117,14 @@ Describe '_orb_print_args_explanation'
   )
 
   It "fails if no declared args"
-    When call _orb_print_args_explanation
+    When call _orb_print_params_explanation
     The status should be failure
   End
 
   It 'prints args explanation'
     parse() {
       _orb_parse_function_declaration
-      _orb_print_args_explanation
+      _orb_print_params_explanation
     }
     When call parse
     The first line of output should include "Required:  Default:          In:                    Catch:  Multiple:"

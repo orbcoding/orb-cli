@@ -6,7 +6,7 @@ _orb_set_function_positional_args() {
     return
   fi
 
-  _orb_get_declared_number_args_in_order _orb_nrs
+  _orb_get_declared_number_params_in_order _orb_nrs
 
   for _orb_nr in ${_orb_nrs[@]}; do
     if _orb_has_arg_value $_orb_nr; then
