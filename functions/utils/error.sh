@@ -22,7 +22,7 @@ _orb_raise_error() {
   
   # Setting descriptor to false will leave it at default
   # So we can go forward to next param without changing value
-  [[ descriptor == false ]] && descriptor=""
+  [[ $descriptor == false ]] && descriptor=""
   local descriptor; orb_if_present descriptor '$descriptor || $_orb_function_descriptor'
 
   local print_trace=${3-true}
