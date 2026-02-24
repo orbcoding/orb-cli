@@ -1,7 +1,7 @@
 Include functions/argument/collection.sh
 Include functions/argument/store.sh
 Include functions/argument/validation.sh
-Include functions/utils/argument.sh
+Include functions/utils/param_token.sh
 Include functions/utils/utils.sh
 Include scripts/call/variables.sh
 Include functions/declaration/checkers.sh

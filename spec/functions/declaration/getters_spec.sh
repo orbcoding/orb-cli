@@ -1,6 +1,6 @@
 Include functions/declaration/getters.sh
 Include functions/declaration/checkers.sh
-Include functions/utils/argument.sh
+Include functions/utils/param_token.sh
 Include functions/utils/utils.sh
 
 # _orb_get_declared_number_params_in_order

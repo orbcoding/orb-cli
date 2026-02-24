@@ -23,7 +23,7 @@ _orb_get_declared_function_options() {
 
 		if [[ ${declaration[$i+1]} == "=" ]] && orb_is_param_token ${declaration[$i]}; then 
 			if orb_is_nr ${declaration[$i]} && orb_is_flag_or_alias_token ${declaration[$i-1]}; then 
-				# step back if flagged param
+				# step back if value flag
 				fn_len=$(($i - 1))
 			else
 				fn_len=$i

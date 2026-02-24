@@ -1,4 +1,4 @@
-Include functions/utils/argument.sh
+Include functions/utils/param_token.sh
 
 # orb_is_flag
 Describe 'orb_is_flag'
@@ -187,35 +187,35 @@ Describe 'orb_is_dash'
   End
 End
 
-# orb_is_base_param
-Describe 'orb_is_base_param'
+# orb_is_canonical_param
+Describe 'orb_is_canonical_param'
   It 'succeeds for flag'
-    When call orb_is_base_param "-f"
+    When call orb_is_canonical_param "-f"
     The status should be success
   End
 
   It 'succeeds for verbose_flag'
-    When call orb_is_base_param "--verbose_flag"
+    When call orb_is_canonical_param "--verbose_flag"
     The status should be success
   End
 
   It 'succeeds for block'
-    When call orb_is_base_param "-b-"
+    When call orb_is_canonical_param "-b-"
     The status should be success
   End
 
   It 'succeeds for rest'
-    When call orb_is_base_param "..."
+    When call orb_is_canonical_param "..."
     The status should be success
   End
 
   It 'succeeds for dash'
-    When call orb_is_base_param "--"
+    When call orb_is_canonical_param "--"
     The status should be success
   End
 
   It 'fails with other'
-    When call orb_is_base_param '_f'
+    When call orb_is_canonical_param '_f'
     The status should be failure
   End
 End

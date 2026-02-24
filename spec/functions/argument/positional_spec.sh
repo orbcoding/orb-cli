@@ -2,7 +2,7 @@ Include functions/argument/positional.sh
 Include functions/declaration/getters.sh
 Include functions/declaration/checkers.sh
 Include functions/argument/getters.sh
-Include functions/utils/argument.sh
+Include functions/utils/param_token.sh
 Include functions/utils/utils.sh
 Include scripts/call/variables.sh
 

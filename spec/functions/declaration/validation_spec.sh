@@ -3,7 +3,7 @@ Include functions/declaration/checkers.sh
 Include functions/declaration/getters.sh
 Include scripts/call/variables.sh
 Include scripts/initialize_variables.sh
-Include functions/utils/argument.sh
+Include functions/utils/param_token.sh
 Include functions/utils/utils.sh
 Include functions/call/help.sh
 

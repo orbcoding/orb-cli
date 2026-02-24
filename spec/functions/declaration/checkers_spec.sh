@@ -1,4 +1,4 @@
-Include functions/utils/argument.sh
+Include functions/utils/param_token.sh
 Include functions/utils/utils.sh
 Include functions/declaration/checkers.sh
 Include functions/declaration/getters.sh

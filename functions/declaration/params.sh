@@ -20,7 +20,7 @@ _orb_get_declared_params_and_start_indexes() {
 			var="${declaration[$i+1]}"
 			orb_is_valid_variable_name "$var" && valid_var=true
 
-			if orb_is_base_param "$param" && ($valid_var || $_orb_declared_raw); then
+			if orb_is_canonical_param "$param" && ($valid_var || $_orb_declared_raw); then
 				_orb_store_declared_param_suffix "$param" "$param_start_i" "$i"
 				_orb_store_declared_param_start_index "$param" "$param_start_i"
 				_orb_declared_params+=("$param")
