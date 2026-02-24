@@ -46,7 +46,7 @@ _orb_get_default_param_option_value() {
 
 	case $_orb_opt in
 		'Required:')
-			_orb_assign_ref=$(orb_is_any_flag $_orb_param || orb_is_block $_orb_param || orb_is_dash $_orb_param && echo false || echo true)
+      _orb_assign_ref=$(orb_is_flag $_orb_param || orb_is_block $_orb_param || orb_is_dash $_orb_param && echo false || echo true)
     ;;
     'Default:')
       _orb_has_declared_boolean_flag $_orb_param && _orb_assign_ref=false

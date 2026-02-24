@@ -5,10 +5,10 @@ Include functions/declaration/validation.sh
 
 _orb_function_declaration=(
   -f = flag
-  -a 1 = flagged_arg
+  -a 1 = value_flag
     Required: true
   --verbose-flag = verbose_flag 
-  --verbose-flagged 1 = verbose_flagged_arg 
+  --verbose-value-flag 1 = verbose_value_flag 
   -b- = block # i = 16-18
   -- = dash_args  
   ... = rest 
@@ -21,12 +21,11 @@ _orb_function_declaration=(
 Describe '_orb_parse_declared_params'
   It 'calls its functions'
     _orb_get_declared_params_and_start_indexes() { spec_fns+=( $(echo_fn) ); }
-    _orb_validate_declared_params() { spec_fns+=( $(echo_fn) ); }
     _orb_get_declared_params_lengths() { spec_fns+=( $(echo_fn) ); }
     _orb_parse_declared_params_options() { spec_fns+=( $(echo_fn) ); }
     When call _orb_parse_declared_params
     The status should be success
-    The variable 'spec_fns[@]' should equal "_orb_get_declared_params_and_start_indexes _orb_validate_declared_params _orb_get_declared_params_lengths _orb_parse_declared_params_options"
+    The variable 'spec_fns[@]' should equal "_orb_get_declared_params_and_start_indexes _orb_get_declared_params_lengths _orb_parse_declared_params_options"
   End
 End
 
@@ -41,13 +40,13 @@ Describe '_orb_get_declared_params_and_start_indexes'
   It 'stores args, vars and start indexes'
     When call _orb_get_declared_params_and_start_indexes
     The status should be success
-    The variable "_orb_declared_params[@]" should equal "-f -a --verbose-flag --verbose-flagged -b- -- ..."
+    The variable "_orb_declared_params[@]" should equal "-f -a --verbose-flag --verbose-value-flag -b- -- ..."
 
     vars_declaration="$(declare -p _orb_declared_vars)"
-    The variable "vars_declaration[@]" should equal 'declare -A _orb_declared_vars=([...]="rest" [-b-]="block" [--]="dash_args" [-f]="flag" [-a]="flagged_arg" [--verbose-flag]="verbose_flag" [--verbose-flagged]="verbose_flagged_arg" )'
+    The variable "vars_declaration[@]" should equal 'declare -A _orb_declared_vars=([...]="rest" [-b-]="block" [--]="dash_args" [-f]="flag" [-a]="value_flag" [--verbose-flag]="verbose_flag" [--verbose-value-flag]="verbose_value_flag" )'
     
     start_index_declaration="$(declare -p declared_params_start_indexes)"
-    The variable "start_index_declaration[@]" should equal 'declare -A declared_params_start_indexes=([...]="22" [-b-]="16" [--]="19" [-f]="0" [-a]="3" [--verbose-flag]="9" [--verbose-flagged]="12" )'
+    The variable "start_index_declaration[@]" should equal 'declare -A declared_params_start_indexes=([...]="22" [-b-]="16" [--]="19" [-f]="0" [-a]="3" [--verbose-flag]="9" [--verbose-value-flag]="12" )'
   End
 
   Context 'declared direct call'
@@ -86,20 +85,65 @@ Describe '_orb_get_declared_params_and_start_indexes'
     The variable "_orb_declared_param_aliases[--file]" should equal "-f"
     The variable "_orb_declared_param_suffixes[-f]" should equal "1"
   End
+
+  It 'supports declared aliases for block params'
+    declaration=(
+      '-b-|--block--' = "block"
+    )
+
+    When call _orb_get_declared_params_and_start_indexes
+    The status should be success
+    The variable "_orb_declared_params[@]" should equal "-b-"
+    The variable "_orb_declared_param_aliases[-b-]" should equal "-b-"
+    The variable "_orb_declared_param_aliases[--block--]" should equal "-b-"
+  End
+
+  It 'fails when alias types are mixed for one canonical param'
+    _orb_raise_invalid_declaration() { echo_fn "$@" && exit 1; }
+    declaration=(
+      '-b-|-f' = "block"
+    )
+
+    When run _orb_get_declared_params_and_start_indexes
+    The status should be failure
+    The output should equal "_orb_raise_invalid_declaration -b-|-f: invalid alias declaration"
+  End
+
+  It 'allows equal sign as value when preceded by Default:'
+    declaration=(
+      -f = file
+      Default: = keep
+    )
+
+    When call _orb_get_declared_params_and_start_indexes
+    The status should be success
+    The variable "_orb_declared_params[@]" should equal "-f"
+  End
+
+  It 'fails on standalone non-Default equals context'
+    _orb_raise_invalid_declaration() { echo_fn "$@" && exit 1; }
+    declaration=(
+      note = comment
+    )
+
+    When run _orb_get_declared_params_and_start_indexes
+    The status should be failure
+    The output should equal "_orb_raise_invalid_declaration note = comment: invalid param assignment"
+  End
 End
 
 # _orb_get_declared_params_lengths
 Describe '_orb_get_declared_params_lengths'
   declaration=("${_orb_function_declaration[@]}")
   declare -A declared_params_lengths
-  declare -A declared_params_start_indexes=([...]="22" [-b-]="16" [--]="19" [-f]="0" [-a]="3" [--verbose-flag]="9" [--verbose-flagged]="12" )
-  declare -a _orb_declared_params=( -f -a --verbose-flag --verbose-flagged -b- -- ... )
+  declare -A declared_params_start_indexes=([...]="22" [-b-]="16" [--]="19" [-f]="0" [-a]="3" [--verbose-flag]="9" [--verbose-value-flag]="12" )
+  declare -a _orb_declared_params=( -f -a --verbose-flag --verbose-value-flag -b- -- ... )
 
   It 'stores length in declared_params_lengths array'
     When call _orb_get_declared_params_lengths
     The status should be success
     length_declaration=$(declare -p declared_params_lengths)
-    The variable "length_declaration" should equal 'declare -A declared_params_lengths=([...]="5" [-b-]="3" [--]="3" [-f]="3" [-a]="6" [--verbose-flag]="3" [--verbose-flagged]="4" )'
+    The variable "length_declaration" should equal 'declare -A declared_params_lengths=([...]="5" [-b-]="3" [--]="3" [-f]="3" [-a]="6" [--verbose-flag]="3" [--verbose-value-flag]="4" )'
   End
 End
 

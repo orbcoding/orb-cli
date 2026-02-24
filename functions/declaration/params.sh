@@ -3,7 +3,6 @@ _orb_parse_declared_params() {
 	declare -A declared_params_start_indexes
 	declare -A declared_params_lengths
 	_orb_get_declared_params_and_start_indexes
-	_orb_validate_declared_params
 	_orb_get_declared_params_lengths
 	_orb_parse_declared_params_options
 }
@@ -13,26 +12,26 @@ _orb_get_declared_params_and_start_indexes() {
 	# Skip first and last item, because we need neighbors around '='.
 	local str; for str in "${declaration[@]:$i:$(( ${#declaration[@]}-2 ))}"; do
 		if [[ "$str" == "=" ]]; then
+			[[ ${declaration[$i-1]} == "Default:" ]] && ((i++)) && continue
+
 			local param_raw param_start_i param_keys=() param var valid_var=false
 			_orb_get_declared_param_context "$i" param_raw param_start_i
 			_orb_get_declared_param_keys "$param_raw" param_keys param
 
 			var="${declaration[$i+1]}"
 			orb_is_valid_variable_name "$var" && valid_var=true
+			_orb_validate_declared_param_assignment "$param_raw" "$param" "$var" "$valid_var"
 
-			if orb_is_canonical_param "$param" && ($valid_var || $_orb_declared_raw); then
-				_orb_store_declared_param_suffix "$param" "$param_start_i" "$i"
-				_orb_store_declared_param_start_index "$param" "$param_start_i"
-				_orb_declared_params+=("$param")
-				_orb_store_declared_param_aliases "$param" "${param_keys[@]}"
-				_orb_store_declared_param_variable_or_comment "$param" "$var" "$valid_var"
-			fi
+			_orb_store_declared_param_suffix "$param" "$param_start_i" "$i"
+			_orb_store_declared_param_start_index "$param" "$param_start_i"
+			_orb_declared_params+=("$param")
+			_orb_store_declared_param_aliases "$param" "${param_keys[@]}"
+			_orb_store_declared_param_variable_or_comment "$param" "$var" "$valid_var"
 		fi
 
 		((i++))
 	done
 }
-
 # Resolve token position for declarations like:
 #   -f = var
 #   -f 2 = var
@@ -50,7 +49,7 @@ _orb_get_declared_param_context() {
 	param_raw_ref=${declaration[$i-1]}
 	param_start_i_ref=$((i - 1))
 
-	if [[ $i != 1 ]] && orb_is_nr ${declaration[$i-1]} && orb_is_flag_or_alias_token ${declaration[$i-2]}; then
+	if [[ $i != 1 ]] && orb_is_nr ${declaration[$i-1]} && orb_is_flag_token ${declaration[$i-2]}; then
 		param_raw_ref=${declaration[$i-2]}
 		param_start_i_ref=$((i - 2))
 	fi
@@ -66,7 +65,7 @@ _orb_get_declared_param_keys() {
 	orb_split_flag_aliases "$param_raw" param_keys_ref
 	param_ref="${param_keys_ref[0]}"
 }
-# Store numeric suffix for flagged params.
+# Store numeric suffix for value flags.
 # Example: "-f 2 = file" stores suffix 2 on canonical key "-f".
 _orb_store_declared_param_suffix() {
 	local param=$1
@@ -83,6 +82,9 @@ _orb_store_declared_param_suffix() {
 _orb_store_declared_param_start_index() {
 	local param=$1
 	local param_start_i=$2
+	if [[ -n ${declared_params_start_indexes[$param]} ]]; then
+		_orb_raise_invalid_declaration "$param: multiple definitions"
+	fi
 	declared_params_start_indexes[$param]=$param_start_i
 }
 
@@ -98,6 +100,13 @@ _orb_store_declared_param_aliases() {
 
 	local alias
 	for alias in "${aliases[@]}"; do
+		if orb_is_flag "$param" && ! orb_is_flag "$alias"; then
+			_orb_raise_invalid_declaration "Alias type mismatch $param|$alias"
+		fi
+		if orb_is_block "$param" && ! orb_is_block "$alias"; then
+			_orb_raise_invalid_declaration "Alias type mismatch $param|$alias"
+		fi
+
 		if [[ -n ${_orb_declared_param_aliases[$alias]} ]] && [[ ${_orb_declared_param_aliases[$alias]} != "$param" ]]; then
 			_orb_raise_invalid_declaration "$alias: multiple definitions"
 		fi

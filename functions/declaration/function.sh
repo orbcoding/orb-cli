@@ -22,7 +22,7 @@ _orb_get_declared_function_options() {
 	local i; for i in $(seq 0 $((${#declaration[@]} - 3))); do
 
 		if [[ ${declaration[$i+1]} == "=" ]] && orb_is_param_token ${declaration[$i]}; then 
-			if orb_is_nr ${declaration[$i]} && orb_is_flag_or_alias_token ${declaration[$i-1]}; then 
+			if orb_is_nr ${declaration[$i]} && orb_is_flag_token ${declaration[$i-1]}; then 
 				# step back if value flag
 				fn_len=$(($i - 1))
 			else

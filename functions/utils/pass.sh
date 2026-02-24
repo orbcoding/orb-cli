@@ -36,7 +36,7 @@ function orb_pass() {
   [[ -z "${_orb_declared_params_history_0[*]}" ]] && _orb_raise_error "$_orb_function_descriptor_history_0 has no arguments to pass"
 
   local _orb_arg; for _orb_arg in "${_orb_pass[@]}"; do
-    if orb_is_any_flag "$_orb_arg"; then
+    if orb_is_input_flag "$_orb_arg"; then
       _orb_pass_flag "$_orb_arg"
     elif orb_is_block "$_orb_arg"; then
       _orb_pass_block "$_orb_arg"
@@ -47,7 +47,7 @@ function orb_pass() {
     elif orb_is_dash $_orb_arg; then
       _orb_pass_dash
     else
-      _orb_raise_error "$_orb_arg not flag, block, nr, ... or --"
+      _orb_raise_error "Invalid argument: $_orb_arg. Not flag, block, nr, ... or --"
     fi
   done
 
@@ -66,7 +66,7 @@ _orb_pass_flag() { # $1 = flag arg/args
   local _orb_flag_arg=$1
   local _orb_flags=()
 
-  if orb_is_verbose_flag "$_orb_flag_arg"; then
+  if [[ "$_orb_flag_arg" == --* ]] || [[ "$_orb_flag_arg" == "+-"* ]]; then
     _orb_flags+=( "$_orb_flag_arg" )
   else
     # Split any combined flags eg -far into -f -a -r

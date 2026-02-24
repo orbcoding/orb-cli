@@ -3,7 +3,7 @@
 # Input key may be runtime alias (eg: --file); for flags we canonicalize first.
 _orb_store_arg_value() {
 	local arg=$1 && shift
-	orb_is_any_flag "$arg" && arg=$(_orb_get_declared_param_key "$arg")
+	orb_is_input_flag "$arg" && arg=$(_orb_get_declared_param_key "$arg")
 
 	if _orb_has_arg_value $arg && _orb_param_option_value_is $arg Multiple: true; then
 		_orb_args_values_start_indexes[$arg]+=" ${#_orb_args_values[@]}"
@@ -31,7 +31,7 @@ _orb_flag_value() {
 	[[ ${1:0:1} == '-' ]] && echo true || echo false
 }
 
-_orb_store_flagged_arg() {
+_orb_store_value_flag() {
 	# $1 can be alias token; suffix lookup always uses canonical key.
 	local arg=$(_orb_get_declared_param_key "$1")
 	local suffix=${_orb_declared_param_suffixes[$arg]}

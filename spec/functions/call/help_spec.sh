@@ -109,8 +109,8 @@ Describe '_orb_print_params_explanation'
       Default: value
       In: first value or other
 
-    -a 1 = flagged_arg
-      "This is flagged comment"
+    -a 1 = value_flag
+      "This is value flag comment"
       Required: true
       Default: Help: "value help"
       In: second value or other
@@ -130,7 +130,7 @@ Describe '_orb_print_params_explanation'
     The first line of output should include "Required:  Default:          In:                    Catch:  Multiple:"
     The output should include "\
   1     false      value             first value or other   -       -          This is first comment
-  -a 1  true       Help: value help  second value or other  -       -          This is flagged comment"
+  -a 1  true       Help: value help  second value or other  -       -          This is value flag comment"
     End
 End
 

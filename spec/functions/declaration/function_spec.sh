@@ -42,8 +42,8 @@ Describe '_orb_parse_function_declaration'
         Required: false
         Default: value
         In: first value or other
-      -a 1 = flagged_arg
-        "This is flagged comment"
+      -a 1 = value_flag
+        "This is value flag comment"
         Required: true
         Default: value
         In: second value or other
@@ -54,7 +54,7 @@ Describe '_orb_parse_function_declaration'
     The variable "_orb_declared_raw" should equal true
     The variable "_orb_declared_params[@]" should equal "1 -a"
     The variable "_orb_declared_comments[1]" should equal "This is first comment"
-    The variable "_orb_declared_comments[-a]" should equal "This is flagged comment"
+    The variable "_orb_declared_comments[-a]" should equal "This is value flag comment"
 
     The variable "_orb_declared_option_values[@]" should equal "false value first value or other true value second value or other"
     # alphabetic order from associative array options keys but still testable
@@ -103,7 +103,7 @@ Describe '_orb_get_declared_function_options'
       "Comment"
       Raw: true
 
-      -f\|--file 1 = file
+      '-f|--file' 1 = file
     )
 
     When call _orb_get_declared_function_options

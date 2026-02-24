@@ -5,7 +5,7 @@ _orb_extract_orb_settings_arguments() {
   local i=0 last_flag_i last_flag_suffix
 
   local arg; for arg in "${args[@]}"; do
-    if orb_is_any_flag $arg; then
+    if orb_is_input_flag $arg; then
       if _orb_has_declared_param $arg; then
         last_flag_i=$i
         last_flag_suffix=${_orb_declared_param_suffixes[$arg]}
@@ -25,7 +25,7 @@ _orb_extract_orb_settings_arguments() {
 
 _orb_has_orb_settings_arguments() {
   local args="$@"
-  orb_is_any_flag ${args[0]}
+  orb_is_input_flag ${args[0]}
 }
 
 

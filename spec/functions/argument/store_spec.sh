@@ -92,8 +92,8 @@ Describe '_orb_flag_value'
 End
 
 
-# _orb_store_flagged_arg
-Describe '_orb_store_flagged_arg'
+# _orb_store_value_flag
+Describe '_orb_store_value_flag'
   args_remaining=(-f followed by args)
   declare -A _orb_declared_param_suffixes=([-f]=3)
 
@@ -102,12 +102,12 @@ Describe '_orb_store_flagged_arg'
   _orb_shift_args() { spec_args+=($(echo_fn $@)); }
 
 	It 'returns true if starts with -'
-    When call _orb_store_flagged_arg -f
+    When call _orb_store_value_flag -f
     The variable "spec_args[@]" should equal "_orb_store_arg_value -f followed by args _orb_shift_args 4"
   End
 
   It 'takes shift step override'
-    When call _orb_store_flagged_arg -f 0
+    When call _orb_store_value_flag -f 0
     The variable "spec_args[@]" should equal "_orb_store_arg_value -f followed by args _orb_shift_args 0"
   End
 End

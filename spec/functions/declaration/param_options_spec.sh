@@ -17,8 +17,8 @@ declaration=(
     Default: value
     In: first value or other
 
-  -a 1 = flagged_arg
-    "This is flagged comment"
+  -a 1 = value_flag
+    "This is value flag comment"
     Required: true
     Default: value
     In: second value or other
@@ -97,13 +97,13 @@ Describe '_orb_get_declared_arg_options'
   It 'gets options declaration with suffixed'
     When call _orb_get_param_options_declaration -a
     The variable "param_options_declaration[@]" should equal "Required: true Default: value In: second value or other"
-    The variable "_orb_declared_comments[-a]" should equal "This is flagged comment"
+    The variable "_orb_declared_comments[-a]" should equal "This is value flag comment"
   End
 
   It 'does not offset comment if extraction falsy'
     _orb_store_declared_param_comment() { return 1; }
     When call _orb_get_param_options_declaration -a
-    The variable "param_options_declaration[@]" should equal "This is flagged comment Required: true Default: value In: second value or other"
+    The variable "param_options_declaration[@]" should equal "This is value flag comment Required: true Default: value In: second value or other"
   End
 
   It 'does not set param_options_declaration if there are none'

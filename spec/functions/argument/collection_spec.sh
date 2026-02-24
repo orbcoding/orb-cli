@@ -65,7 +65,7 @@ End
 # _orb_collect_flag_arg
 Describe '_orb_collect_flag_arg'
   _orb_store_boolean_flag() { echo_fn $@; }
-  _orb_store_flagged_arg() { echo_fn $@; }
+  _orb_store_value_flag() { echo_fn $@; }
   # _orb_try_collect_multiple_flags() { echo_fn $@; }
   _orb_try_inline_arg_fallback() { echo_fn $@; }
 
@@ -81,7 +81,7 @@ Describe '_orb_collect_flag_arg'
     declare -A _orb_declared_param_suffixes=([-f]=1)
     When call _orb_collect_flag_arg -f
     The status should be success
-    The output should equal "_orb_store_flagged_arg -f"
+    The output should equal "_orb_store_value_flag -f"
   End
   
   It 'tries to parse multiple flags and inline args if no flags declared'
@@ -197,7 +197,7 @@ End
 # _orb_try_collect_multiple_flags
 Describe '_orb_try_collect_multiple_flags'
   _orb_store_boolean_flag() { spec_fns+=($(echo_fn $@)); }
-  _orb_store_flagged_arg() { spec_fns+=($(echo_fn $@)); }
+  _orb_store_value_flag() { spec_fns+=($(echo_fn $@)); }
   _orb_shift_args() { spec_fns+=($(echo_fn $@)); }
 
   It 'fails on verbose flags'
@@ -217,7 +217,7 @@ Describe '_orb_try_collect_multiple_flags'
     declare -A _orb_declared_param_suffixes=([-f]=3 [-a]=2)
     When call _orb_try_collect_multiple_flags -fa
     The status should be success
-    The variable "spec_fns[@]" should equal "_orb_store_flagged_arg -f 0 _orb_store_flagged_arg -a 0 _orb_shift_args 4"
+    The variable "spec_fns[@]" should equal "_orb_store_value_flag -f 0 _orb_store_value_flag -a 0 _orb_shift_args 4"
   End
 End
 

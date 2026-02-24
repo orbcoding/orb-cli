@@ -28,7 +28,7 @@ _orb_collect_args() {
 	while [[ "${#args_remaining[@]}" > 0 ]]; do
 		local arg="${args_remaining[0]}"
 
-		if orb_is_any_flag "$arg"; then 
+		if orb_is_input_flag "$arg"; then 
 			_orb_collect_flag_arg "$arg"
 		elif orb_is_block "$arg"; then
 			_orb_collect_block_arg "$arg"
@@ -45,7 +45,7 @@ _orb_collect_flag_arg() { # $1 input_arg
 	if _orb_has_declared_boolean_flag $arg; then
 		_orb_store_boolean_flag "$arg"
 	elif _orb_has_declared_value_flag "$arg"; then
-		_orb_store_flagged_arg "$arg"
+		_orb_store_value_flag "$arg"
 	else
 		local invalid_flags=()
 		_orb_try_collect_multiple_flags "$arg"
@@ -95,7 +95,7 @@ _orb_try_inline_arg_fallback() {
 }
 
 _orb_try_collect_multiple_flags() { # $1 arg
-	if orb_is_verbose_flag "$1"; then
+	if [[ "$1" =~ ^(--|\+-).* ]]; then
 		invalid_flags+=( "$1" )
 		return 1 # only single boolean flags can be multi-flags
 	fi
@@ -124,7 +124,7 @@ _orb_try_collect_multiple_flags() { # $1 arg
 		if [[ -z "$suffix" ]]; then 
 			_orb_store_boolean_flag "$flag" 0
 		else
-			_orb_store_flagged_arg "$flag" 0
+			_orb_store_value_flag "$flag" 0
 			# if declared eg: -f 2 = var - we need to shift 3 steps to pass -f + 2 
 			(( $suffix >= $steps )) && steps=$((suffix + 1))
 		fi

@@ -7,7 +7,7 @@ _orb_has_declared_param() {
 
 _orb_has_declared_boolean_flag() { # $1 param
 	local param=$(_orb_get_declared_param_key "$1")
-	! (_orb_has_declared_param $param && orb_is_any_flag $param) && return 1
+	! (_orb_has_declared_param $param && orb_is_flag $param) && return 1
 	declare -n suffixes="_orb_declared_param_suffixes$_orb_variable_suffix"
   [[ -z ${suffixes[$param]} ]]
 }
@@ -26,7 +26,7 @@ _orb_has_declared_array_flag_param() {
 	declare -n suffixes="_orb_declared_param_suffixes$_orb_variable_suffix"
 	local suffix=${suffixes[$param]}
 	
-	if orb_is_any_flag $param && [[ -n $suffix ]] && (( $suffix > 1 )); then 
+	if orb_is_flag $param && [[ -n $suffix ]] && (( $suffix > 1 )); then 
 		return 0
 	fi
 
@@ -44,7 +44,7 @@ _orb_param_option_value_is() {
 	local param=$1
 	local opt=$2
 	_orb_get_param_option_value $param $opt value
-	[[ "${value[@]}" == $3 ]]
+	[[ "${value[*]}" == $3 ]]
 }
 
 _orb_param_catches() { # $1 param
@@ -54,7 +54,7 @@ _orb_param_catches() { # $1 param
 
 	orb_in_arr any param_catch && return
 
-	if orb_is_flag $value; then
+	if orb_is_input_flag $value; then
 		! orb_in_arr flag param_catch && return 1
 	elif orb_is_block $value; then
 		! orb_in_arr block param_catch && return 1

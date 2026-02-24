@@ -14,7 +14,7 @@
 # End
 
 
-# Describe '_orb_store_flagged_arg'
+# Describe '_orb_store_value_flag'
 
 #   It 'prints args'
 #     When call test_orb_print_args "${test_orb_print_args_input_args[@]}"

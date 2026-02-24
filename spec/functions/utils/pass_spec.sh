@@ -12,26 +12,26 @@ Describe 'orb_pass'
     -f = flag
     -a 1 = flag_arg
     -b- = block
-    --verbose_flag = verbose_flag
+    --verbose-flag = verbose_flag
     ... = rest 
       Required: false
     -- = dash
   )
 
   spec_function() { source $_orb_root/bin/orb; callback; }
-  callback() { orb_pass -a my_arr -- 1 -f -a -b- --verbose_flag ... --; }
+  callback() { orb_pass -a my_arr -- 1 -f -a -b- --verbose-flag ... --; }
 
   BeforeEach() { my_arr=(); }
   
   It 'should pass received args'
-    When call spec_function first -f -a arg -b- my block -b- --verbose_flag rest args -- dash args
-    The variable "my_arr[@]" should eq "first -f -a arg -b- my block -b- --verbose_flag rest args -- dash args"
+    When call spec_function first -f -a arg -b- my block -b- --verbose-flag rest args -- dash args
+    The variable "my_arr[@]" should eq "first -f -a arg -b- my block -b- --verbose-flag rest args -- dash args"
   End
 
   It 'should pass only values of received args if -v'
-    callback() { orb_pass -v -a my_arr -- 1 -f -a -b- --verbose_flag ... --; }
-    When call spec_function first -f -a arg -b- my block -b- --verbose_flag rest args -- dash args
-    The variable "my_arr[@]" should eq "first -f arg my block --verbose_flag rest args dash args"
+    callback() { orb_pass -v -a my_arr -- 1 -f -a -b- --verbose-flag ... --; }
+    When call spec_function first -f -a arg -b- my block -b- --verbose-flag rest args -- dash args
+    The variable "my_arr[@]" should eq "first -f arg my block --verbose-flag rest args dash args"
   End
 
   It 'should not pass anything if nothing received'
@@ -60,8 +60,8 @@ Describe '_orb_pass_flag'
     End
 
     It 'handles verbose flags'
-      When call _orb_pass_flag --verbose_flag
-      The output should eq "--verbose_flag   true"
+      When call _orb_pass_flag --verbose-flag
+      The output should eq "--verbose-flag   true"
     End
   End
 

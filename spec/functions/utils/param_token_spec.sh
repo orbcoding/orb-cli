@@ -12,19 +12,19 @@ Describe 'orb_is_flag'
     The status should be success
   End
 
-  It 'succeeds with plus (+) flag'
+  It 'fails with plus (+) flag'
     When call orb_is_flag +f
-    The status should be success
-  End
-
-  It 'succeeds with multiple flags'
-    When call orb_is_flag -far
-    The status should be success
-  End
-
-  It 'fails with verbose flag (--) flag'
-    When call orb_is_flag --verbose_flag
     The status should be failure
+  End
+
+  It 'fails with multiple chars'
+    When call orb_is_flag -far
+    The status should be failure
+  End
+
+  It 'succeeds with verbose flag (--) flag'
+    When call orb_is_flag --verbose-flag
+    The status should be success
   End
 
   It 'fails without +/- prefix'
@@ -53,45 +53,30 @@ Describe 'orb_is_flag'
   End
 End
 
-# orb_is_verbose_flag
-Describe 'orb_is_verbose_flag'
-  It 'succceeds with two dashes (--) flag'
-    When call orb_is_verbose_flag --verbose_flag
+# orb_is_input_flag
+Describe 'orb_is_input_flag'
+  It 'accepts normal short flag'
+    When call orb_is_input_flag -f
     The status should be success
   End
 
-  It 'can start with plus (+-)'
-    When call orb_is_verbose_flag +-verbose_flag
+  It 'accepts normal verbose flag'
+    When call orb_is_input_flag --verbose-flag
     The status should be success
   End
 
-  It 'accepts nrs'
-    When call orb_is_verbose_flag "--verbose-flag1"
+  It 'accepts reversed short flag (+f)'
+    When call orb_is_input_flag +f
     The status should be success
   End
 
-  It 'accepts _'
-    When call orb_is_verbose_flag "--verbose-flag_"
+  It 'accepts reversed verbose flag (+-verbose-flag)'
+    When call orb_is_input_flag +-verbose-flag
     The status should be success
   End
 
-  It 'accepts w'
-    When call orb_is_verbose_flag --w
-    The status should be success
-  End
-
-  It 'fails on single dash flags'
-    When call orb_is_verbose_flag -f
-    The status should be failure
-  End
-
-  It 'fails with spaces'
-    When call orb_is_verbose_flag "--verbose flag"
-    The status should be failure
-  End
-
-  It 'fails if end with block style dash'
-    When call orb_is_verbose_flag "--verbose-flag-"
+  It 'fails for invalid plus-verbose form'
+    When call orb_is_input_flag +--verbose-flag
     The status should be failure
   End
 End
@@ -105,7 +90,7 @@ Describe 'orb_is_flag_with_nr'
   End
 
   It 'succeeds with verbose flag (--) flag arg'
-    When call orb_is_flag_with_nr "--verbose_flag 20"
+    When call orb_is_flag_with_nr "--verbose-flag 20"
     The status should be success
   End
 
@@ -150,9 +135,14 @@ Describe 'orb_is_block'
     The status should be success
   End
 
-  It 'succeeds with longer name -long_orb_block-'
-    When call orb_is_block "-long_orb_block-2-"
+  It 'succeeds with verbose block name'
+    When call orb_is_block "--very-verbose-block--"
     The status should be success
+  End
+
+  It 'fails for single-dash multi-letter block'
+    When call orb_is_block "-long-block-"
+    The status should be failure
   End
 
   It 'fails with spaces'
@@ -195,7 +185,7 @@ Describe 'orb_is_canonical_param'
   End
 
   It 'succeeds for verbose_flag'
-    When call orb_is_canonical_param "--verbose_flag"
+    When call orb_is_canonical_param "--verbose-flag"
     The status should be success
   End
 
@@ -233,20 +223,112 @@ Describe 'orb_split_flag_aliases'
   End
 End
 
-# orb_is_flag_or_alias_token
-Describe 'orb_is_flag_or_alias_token'
-  It 'succeeds for single flag'
-    When call orb_is_flag_or_alias_token '-f'
+# orb_is_flag_alias_token
+Describe 'orb_is_flag_alias_token'
+  It 'succeeds for flag alias token'
+    When call orb_is_flag_alias_token '-f|--file'
     The status should be success
   End
 
+  It 'fails for block alias token'
+    When call orb_is_flag_alias_token '-b-|--block--'
+    The status should be failure
+  End
+
+  It 'fails for non-alias single flag token'
+    When call orb_is_flag_alias_token '-f'
+    The status should be failure
+  End
+
+  It 'fails when any alias part is invalid'
+    When call orb_is_flag_alias_token '-f|1'
+    The status should be failure
+  End
+End
+
+# orb_is_block_alias_token
+Describe 'orb_is_block_alias_token'
+  It 'succeeds for block alias token'
+    When call orb_is_block_alias_token '-b-|--block--'
+    The status should be success
+  End
+
+  It 'fails for flag alias token'
+    When call orb_is_block_alias_token '-f|--file'
+    The status should be failure
+  End
+
+  It 'fails when any alias part is invalid'
+    When call orb_is_block_alias_token '-b-|1'
+    The status should be failure
+  End
+
+  It 'fails when alias parts mix flag and block kinds'
+    When call orb_is_block_alias_token '-f|-b-'
+    The status should be failure
+  End
+End
+
+# orb_is_alias_token
+Describe 'orb_is_alias_token'
   It 'succeeds for alias token'
-    When call orb_is_flag_or_alias_token '-f|--file'
+    When call orb_is_alias_token '-f|--file'
     The status should be success
   End
 
-  It 'fails when any alias part is not a flag'
-    When call orb_is_flag_or_alias_token '-f|1'
+  It 'succeeds for block alias token'
+    When call orb_is_alias_token '-b-|--block--'
+    The status should be success
+  End
+
+  It 'fails for non-alias single flag token'
+    When call orb_is_alias_token '-f'
+    The status should be failure
+  End
+
+  It 'fails when any alias part is invalid'
+    When call orb_is_alias_token '-f|1'
+    The status should be failure
+  End
+
+  It 'fails when alias parts mix flag and block kinds'
+    When call orb_is_alias_token '-f|-b-'
+    The status should be failure
+  End
+End
+
+# orb_is_flag_token
+Describe 'orb_is_flag_token'
+  It 'succeeds for single flag token'
+    When call orb_is_flag_token '-f'
+    The status should be success
+  End
+
+  It 'succeeds for flag alias token'
+    When call orb_is_flag_token '-f|--file'
+    The status should be success
+  End
+
+  It 'fails for block alias token'
+    When call orb_is_flag_token '-b-|--block--'
+    The status should be failure
+  End
+End
+
+# orb_is_block_token
+Describe 'orb_is_block_token'
+  It 'succeeds for single block token'
+    When call orb_is_block_token '-b-'
+    The status should be success
+  End
+
+  It 'succeeds for block alias token'
+    When call orb_is_block_token '-b-|--block--'
+    The status should be success
+  End
+
+  It 'fails for flag alias token'
+    When call orb_is_block_token '-f|--file'
     The status should be failure
   End
 End
@@ -260,6 +342,11 @@ Describe 'orb_is_param_token'
 
   It 'succeeds for alias flag token'
     When call orb_is_param_token '-f|--file'
+    The status should be success
+  End
+
+  It 'succeeds for alias block token'
+    When call orb_is_param_token '-b-|--block--'
     The status should be success
   End
 

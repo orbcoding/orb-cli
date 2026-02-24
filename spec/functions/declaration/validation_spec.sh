@@ -43,56 +43,28 @@ Describe '_orb_raise_undeclared'
   End
 End
 
-
-Describe '_orb_validate_declared_params'
+Describe '_orb_validate_declared_param_assignment'
   _orb_raise_invalid_declaration() { echo "$1" && exit 1; }
 
-  It 'raises error on multiple definitions of same argument'
-    _orb_declared_params=(1 2 3 4 5 5)
-
-    When run _orb_validate_declared_params
-    The status should be failure
-    The output should eq "5: multiple definitions"
-  End
-  
-  It 'raises error on multiple definitions at beginning'
-    _orb_declared_params=(1 1 2 3 4 5)
-
-    When run _orb_validate_declared_params
-    The status should be failure
-    The output should eq "1: multiple definitions"
-  End
-  
-  It 'raises error on multiple definitions with others between'
-    _orb_declared_params=(1 2 3 1 4 5)
-
-    When run _orb_validate_declared_params
-    The status should be failure
-    The output should eq "1: multiple definitions"
-  End
-
-  It 'does not raise error if unique arg definitions'
-    _orb_declared_params=(1 2 3 4 5)
-
-    When call _orb_validate_declared_params
-    The status should be success
-  End
-End
-
-Describe '_orb_validate_declared_param_alias_token_types'
-  _orb_raise_invalid_declaration() { echo "$1" && exit 1; }
-
-  It 'fails when alias token contains non-flag alias part'
-    declaration=(-f\|1 = file)
-    When run _orb_validate_declared_param_alias_token_types
+  It 'fails for invalid alias token'
+    _orb_declared_raw=false
+    When run _orb_validate_declared_param_assignment '-f|1' '-f' file true
     The status should be failure
     The output should eq "-f|1: invalid alias declaration"
   End
 
-  It 'succeeds for valid alias flag token'
-    declaration=(-f\|--file = file)
-    When call _orb_validate_declared_param_alias_token_types
-    The status should be success
+  It 'fails for invalid param assignment context'
+    _orb_declared_raw=false
+    When run _orb_validate_declared_param_assignment note note comment true
+    The status should be failure
+    The output should eq "note = comment: invalid param assignment"
+  End
+
+  It 'fails for invalid variable when not raw'
+    _orb_declared_raw=false
+    When run _orb_validate_declared_param_assignment -f -f "invalid name" false
+    The status should be failure
+    The output should eq "-f: invalid variable name 'invalid name'."
   End
 End
 

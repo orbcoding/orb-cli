@@ -13,7 +13,7 @@ _orb_prevalidate_declaration() {
 }
 
 _orb_raise_invalid_declaration() {
-	_orb_raise_error "Invalid declaration. $@" 
+	_orb_raise_error "Invalid declaration. $*" 
 }
 
 _orb_raise_undeclared() {
@@ -21,43 +21,23 @@ _orb_raise_undeclared() {
 	_orb_raise_error "'$1' not in $_orb_fn_descriptor params declaration\n\n$(_orb_print_params_explanation)"
 }
 
-_orb_validate_declared_params() {
-	local i=0 param other_param 
-	
-	local len=${#_orb_declared_params[@]}
-	
-	# compare all params except last which will already be compared with rest
-	for param in "${_orb_declared_params[@]:0:$(($len-1))}"; do
-		# compare against all params not previously compared
-		for other_param in "${_orb_declared_params[@]:$((i+1))}"; do
-			[[ $param == $other_param ]] && _orb_raise_invalid_declaration "$param: multiple definitions"
-		done
+_orb_validate_declared_param_assignment() {
+	local param_raw=$1
+	local param=$2
+	local var=$3
+	local valid_var=$4
 
-		((i++))
-	done
+	if [[ "$param_raw" == *"|"* ]] && ! orb_is_alias_token "$param_raw"; then
+		_orb_raise_invalid_declaration "$param_raw: invalid alias declaration"
+	fi
 
-	_orb_validate_declared_param_alias_token_types
-}
+	if ! orb_is_canonical_param "$param"; then
+		_orb_raise_invalid_declaration "$param_raw = $var: invalid param assignment"
+	fi
 
-_orb_validate_declared_param_alias_token_types() {
-	declare -p declaration >/dev/null 2>&1 || return 0
-
-	local i=1
-	local str; for str in "${declaration[@]:$i:$(( ${#declaration[@]}-2 ))}"; do
-		if [[ "$str" == "=" ]]; then
-			local param_raw="${declaration[$i-1]}"
-
-			if [[ $i != 1 ]] && orb_is_nr "${declaration[$i-1]}" && orb_is_flag_or_alias_token "${declaration[$i-2]}"; then
-				param_raw="${declaration[$i-2]}"
-			fi
-
-			if [[ $param_raw == *"|"* ]] && ! orb_is_flag_or_alias_token "$param_raw"; then
-				_orb_raise_invalid_declaration "$param_raw: invalid alias declaration"
-			fi
-		fi
-
-		((i++))
-	done
+	if ! $valid_var && ! $_orb_declared_raw; then
+		_orb_raise_invalid_declaration "$param: invalid variable name '$var'."
+	fi
 }
 
 _orb_postvalidate_declared_params_options() {
@@ -68,7 +48,7 @@ _orb_postvalidate_declared_params_options() {
 }
 
 _orb_postvalidate_declared_params_options_catchs() {
-	local param; for param in ${_orb_declared_params[@]}; do
+	local param; for param in "${_orb_declared_params[@]}"; do
 		local param_catch; _orb_get_param_option_declaration $param "Catch:" param_catch
 		
 		local value; for value in "${param_catch[@]}"; do
@@ -80,7 +60,7 @@ _orb_postvalidate_declared_params_options_catchs() {
 }
 
 _orb_postvalidate_declared_params_options_requireds() {
-	local param; for param in ${_orb_declared_params[@]}; do
+	local param; for param in "${_orb_declared_params[@]}"; do
 	 	local value; _orb_get_param_option_value $param "Required:" value
 
 		if ! orb_in_arr $value _orb_available_param_option_required_values; then
@@ -90,7 +70,7 @@ _orb_postvalidate_declared_params_options_requireds() {
 }
 
 _orb_postvalidate_declared_params_options_multiples() {
-	local param; for param in ${_orb_declared_params[@]}; do
+	local param; for param in "${_orb_declared_params[@]}"; do
 	 	local value; _orb_get_param_option_value $param "Multiple:" value
 		if [[ -n $value ]] && ! orb_in_arr $value _orb_available_param_option_multiple_values; then
 			_orb_raise_invalid_declaration "$param: Invalid Multiple: value: $value. Available values: ${_orb_available_param_option_multiple_values[*]}"
