@@ -44,7 +44,7 @@ _orb_postvalidate_declared_params_options() {
   _orb_postvalidate_declared_params_options_catchs
 	_orb_postvalidate_declared_params_options_requireds
 	_orb_postvalidate_declared_params_options_multiples
-	# _orb_postvalidate_declared_params_incompatible_options
+	_orb_postvalidate_declared_params_incompatible_options
 }
 
 _orb_postvalidate_declared_params_options_catchs() {
@@ -78,13 +78,13 @@ _orb_postvalidate_declared_params_options_multiples() {
 	done
 }
 
-# _orb_postvalidate_declared_params_incompatible_options() {
-# 	local param; for param in ${_orb_declared_params[@]}; do
-# 		if _orb_get_param_option_declaration $param "Default:" && _orb_get_param_option_declaration $param "DefaultHelp:"; then
-# 			_orb_raise_invalid_declaration "$param: Incompatible options: Default:, DefaultHelp:"
-# 		fi
-# 	done
-# }
+_orb_postvalidate_declared_params_incompatible_options() {
+	local param; for param in "${_orb_declared_params[@]}"; do
+		if _orb_has_declared_value_flag "$param" && _orb_param_option_value_is "$param" "Multiple:" true && _orb_get_param_option_declaration "$param" "In:"; then
+			_orb_raise_invalid_declaration "$param: Incompatible options: In:, Multiple: true"
+		fi
+	done
+}
 
 _orb_is_valid_param_option() {
 	local param=$1 

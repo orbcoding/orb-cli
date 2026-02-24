@@ -74,11 +74,11 @@ Describe '_orb_postvalidate_declared_params_options'
     _orb_postvalidate_declared_params_options_catchs() { spec_args+=($(echo_fn)); }
     _orb_postvalidate_declared_params_options_requireds() { spec_args+=($(echo_fn)); }
     _orb_postvalidate_declared_params_options_multiples() { spec_args+=($(echo_fn)); }
-    # _orb_postvalidate_declared_args_incompatible_options() { spec_args+=$(echo_fn); }
+    _orb_postvalidate_declared_params_incompatible_options() { spec_args+=($(echo_fn)); }
     
     When call _orb_postvalidate_declared_params_options
     The status should be success
-    The variable "spec_args[@]" should equal "_orb_postvalidate_declared_params_options_catchs _orb_postvalidate_declared_params_options_requireds _orb_postvalidate_declared_params_options_multiples"
+    The variable "spec_args[@]" should equal "_orb_postvalidate_declared_params_options_catchs _orb_postvalidate_declared_params_options_requireds _orb_postvalidate_declared_params_options_multiples _orb_postvalidate_declared_params_incompatible_options"
   End
 End
 
@@ -146,28 +146,37 @@ Describe '_orb_postvalidate_declared_params_options_multiples'
   End
 End
 
-# _orb_postvalidate_declared_args_incompatible_options
-# Describe '_orb_postvalidate_declared_args_incompatible_options'
-#   _orb_declared_params=(-f)
-#   _orb_declared_option_values=(def defhelp)
-#   declare -A _orb_declared_option_start_indexes=([Default:]=0 [DefaultHelp:]="-")
-#   declare -A _orb_declared_option_lengths=([Default:]=1 [DefaultHelp:]="-")
+# _orb_postvalidate_declared_params_incompatible_options
+Describe '_orb_postvalidate_declared_params_incompatible_options'
+  _orb_declared_params=(-f)
+  declare -A _orb_declared_param_suffixes=([-f]=1)
 
-#   It 'succeeds on valid multiple values'
-#     When call _orb_postvalidate_declared_args_incompatible_options
-#     The status should be success
-#   End
+  It 'succeeds when In is present without Multiple true'
+    _orb_declared_option_values=(allowed value)
+    declare -A _orb_declared_option_start_indexes=([Multiple:]=- [In:]=0)
+    declare -A _orb_declared_option_lengths=([Multiple:]=- [In:]=2)
+    When call _orb_postvalidate_declared_params_incompatible_options
+    The status should be success
+  End
 
-#   It 'fails on invalid multiple values'
-#     _orb_raise_invalid_declaration() { echo_fn $@; exit 1; }
-#     _orb_declared_option_start_indexes[DefaultHelp:]=1
-#     _orb_declared_option_lengths[DefaultHelp:]=1
+  It 'succeeds when Multiple is not true'
+    _orb_declared_option_values=(false)
+    declare -A _orb_declared_option_start_indexes=([Multiple:]=0 [In:]=-)
+    declare -A _orb_declared_option_lengths=([Multiple:]=1 [In:]=-)
+    When call _orb_postvalidate_declared_params_incompatible_options
+    The status should be success
+  End
 
-#     When run _orb_postvalidate_declared_args_incompatible_options
-#     The status should be failure
-#     The output should equal "_orb_raise_invalid_declaration -f: Incompatible options: Default:, DefaultHelp:"
-#   End
-# End
+  It 'fails when In and Multiple true are combined on value flag'
+    _orb_raise_invalid_declaration() { echo_fn "$@"; exit 1; }
+    _orb_declared_option_values=(true allowed value)
+    declare -A _orb_declared_option_start_indexes=([Multiple:]=0 [In:]=1)
+    declare -A _orb_declared_option_lengths=([Multiple:]=1 [In:]=2)
+    When run _orb_postvalidate_declared_params_incompatible_options
+    The status should be failure
+    The output should equal "_orb_raise_invalid_declaration -f: Incompatible options: In:, Multiple: true"
+  End
+End
 
 # _orb_is_valid_param_option
 Describe '_orb_is_valid_param_option'
