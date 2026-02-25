@@ -41,7 +41,7 @@ _orb_store_value_flag() {
 	if _orb_is_valid_arg "$arg" "${value[@]}"; then
 		_orb_store_arg_value $arg "${value[@]}"
 	else
-		_orb_raise_invalid_arg "$arg" "${value[@]}"
+		_orb_raise_invalid_arg "invalid value for $arg: ${value[*]}"
 	fi
 
 	_orb_shift_args $shift

@@ -43,7 +43,8 @@ _orb_has_declared_array_param() {
 _orb_param_option_value_is() {
 	local param=$1
 	local opt=$2
-	_orb_get_param_option_value $param $opt value
+	local value=()
+	_orb_get_param_option_value $param $opt value || return 1
 	[[ "${value[*]}" == $3 ]]
 }
 

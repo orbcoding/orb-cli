@@ -178,3 +178,24 @@ Describe '_orb_param_catches'
   End
 End
 
+# _orb_param_option_value_is
+Describe '_orb_param_option_value_is'
+  _orb_declared_params=(-e)
+  declare -A _orb_declared_param_aliases=()
+
+  It 'fails when option is not declared for param'
+    declare -A _orb_declared_option_start_indexes=([Multiple:]='-')
+    declare -A _orb_declared_option_lengths=([Multiple:]='-')
+    When call _orb_param_option_value_is -e Multiple: true
+    The status should be failure
+  End
+
+  It 'succeeds when option value matches'
+    _orb_declared_option_values=(true)
+    declare -A _orb_declared_option_start_indexes=([Multiple:]=0)
+    declare -A _orb_declared_option_lengths=([Multiple:]=1)
+    When call _orb_param_option_value_is -e Multiple: true
+    The status should be success
+  End
+End
+

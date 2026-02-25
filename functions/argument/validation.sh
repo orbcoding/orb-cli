@@ -10,13 +10,8 @@ _orb_is_valid_in() {
 	orb_in_arr "$val" in_arr
 }
 
-_orb_raise_invalid_arg() { # $1 arg_key $2... arg_value
-	local arg=$1; shift
-
-	local msg="invalid argument: $arg"
-	if [[ $# -gt 0 ]]; then
-		msg+=" with value $*"
-	fi
+_orb_raise_invalid_arg() { # $1 message
+	local msg="$1"
 
 	msg+="\n\nparameters\n$(_orb_print_params_explanation)"
 

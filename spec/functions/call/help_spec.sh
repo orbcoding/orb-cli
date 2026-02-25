@@ -127,11 +127,56 @@ Describe '_orb_print_params_explanation'
       _orb_print_params_explanation
     }
     When call parse
-    The first line of output should include "Required:  Default:          In:                    Catch:  Multiple:"
-    The output should include "\
-  1     false      value             first value or other   -       -          This is first comment
-  -a 1  true       Help: value help  second value or other  -       -          This is value flag comment"
+    The first line of output should include "1"
+    The first line of output should include "This is first comment"
+    The first line of output should include "default: value"
+		The output should include "-a 1"
+    The output should include "This is value flag comment"
+    The output should include "(required)"
     End
+
+  It 'hides default false for boolean flags and shows default true'
+    _orb_function_declaration=(
+      -i = idle
+      -d = daemon
+        Default: true
+    )
+
+    parse() {
+      _orb_parse_function_declaration
+      _orb_print_params_explanation
+    }
+
+    When call parse
+    The output should include "-i"
+    The output should include "idle"
+    The output should not include "idle (default: false)"
+    The output should include "daemon (default: true)"
+  End
+
+  It 'shows multiple only for params that declare it'
+    _orb_function_declaration=(
+      -e 1 = env
+        Default: development
+      -s 1 = service "start single service"
+        Multiple: true
+      -i = idle
+      -d = daemon
+        Default: true
+    )
+
+    parse() {
+      _orb_parse_function_declaration
+      _orb_print_params_explanation
+    }
+
+    When call parse
+    The output should include "start single service (multiple)"
+    The output should not include "env (multiple)"
+    The output should not include "idle (multiple)"
+    The output should include "daemon (default: true)"
+    The output should not include "daemon (multiple"
+  End
 End
 
 # _orb_print_function_comment

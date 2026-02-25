@@ -86,34 +86,68 @@ _orb_print_params_explanation() {
 	declare -n declared_params=_orb_declared_params$_orb_variable_suffix
 	[[ ${#declared_params[@]} == 0 ]] && return 1
 
-	OLD_IFS=$IFS
-	IFS='§'; local msg="$(orb_bold '§')${_orb_available_param_options_help[*]}$(orb_bold '§')\n"
-	IFS=$OLD_IFS
+	declare -n declared_vars=_orb_declared_vars$_orb_variable_suffix
+	declare -n declared_suffixes=_orb_declared_param_suffixes$_orb_variable_suffix
 
+	local labels=()
+	local descriptions=()
+	local meta_suffixes=()
+	local max_label_len=0
 	local param; for param in "${declared_params[@]}"; do
-		local msg+="$param"
+		local label="$param"
 
-	 	if _orb_has_declared_value_flag $param; then
-			declare -n declared_suffixes=_orb_declared_param_suffixes$_orb_variable_suffix
-			msg+=" ${declared_suffixes[$param]}"
+		if _orb_has_declared_value_flag "$param"; then
+			label+=" ${declared_suffixes[$param]}"
 		fi
 
-		local opt; for opt in "${_orb_available_param_options_help[@]}"; do
-			local value=()
-			
-			_orb_get_param_option_declaration $param $opt value
-
-			msg+="§$([[ -n "${value[*]}" ]] && echo "${value[@]}" || echo '-')"
-		done
-
-		local comment; comment="$(_orb_get_param_comment $param)"
+		local desc
+		desc="$(_orb_get_param_comment "$param")"
 		if [[ $? == 1 ]]; then
-			declare -n declared_vars=_orb_declared_vars$_orb_variable_suffix
-			comment=${declared_vars[$param]}
+			desc="${declared_vars[$param]}"
 		fi
 
-		msg+="§$comment\n"
+		local meta=()
+		local required=false
+		if _orb_get_param_option_value "$param" Required: required && [[ "$required" == true ]]; then
+			meta+=("required")
+		fi
+
+		local multiple=false
+		if _orb_get_param_option_value "$param" Multiple: multiple && [[ "$multiple" == true ]]; then
+			meta+=("multiple")
+		fi
+
+		local default=()
+		if _orb_get_param_option_value "$param" Default: default; then
+			if [[ -n "${default[*]}" ]]; then
+				if _orb_has_declared_boolean_flag "$param" && [[ "${default[*]}" == false ]]; then
+					:
+				else
+					meta+=("default: ${default[*]}")
+				fi
+			fi
+		fi
+
+		local meta_suffix=""
+		if [[ ${#meta[@]} -gt 0 ]]; then
+			local meta_joined="${meta[0]}"
+			local meta_i
+			for meta_i in "${meta[@]:1}"; do
+				meta_joined+=", $meta_i"
+			done
+			meta_suffix=" ($meta_joined)"
+		fi
+
+		labels+=("$label")
+		descriptions+=("$desc")
+		meta_suffixes+=("$meta_suffix")
+
+		(( ${#label} > max_label_len )) && max_label_len=${#label}
 	done
 
-	echo -e "$msg" | sed 's/^/  /' | column -t -s '§'
+	local label_width=$((max_label_len + 2))
+	local i
+	for i in "${!labels[@]}"; do
+		printf '  %-'"$label_width"'s %s%s\n' "${labels[$i]}" "${descriptions[$i]}" "${meta_suffixes[$i]}"
+	done
 }

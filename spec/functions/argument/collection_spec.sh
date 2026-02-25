@@ -144,9 +144,9 @@ Describe '_orb_collect_inline_arg'
 
   It 'fails if no rest fallback declared'
     _orb_declared_params=(-f)
-    When call _orb_collect_inline_arg 1
+    When call _orb_collect_inline_arg asd
     The status should be failure
-		The output should equal "_orb_raise_invalid_arg 1 1"
+		The output should equal "_orb_raise_invalid_arg unexpected positional argument: asd"
   End
 End
 
@@ -190,7 +190,7 @@ Describe '_orb_try_inline_arg_fallback'
     declare -A _orb_declared_option_lengths=("- -")
     When run _orb_try_inline_arg_fallback -f- -f-
     The status should be failure
-    The output should equal "_orb_raise_invalid_arg -f-"
+		The output should equal "_orb_raise_invalid_arg invalid argument: -f-"
   End
 End
 

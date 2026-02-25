@@ -76,7 +76,11 @@ _orb_collect_inline_arg() {
 	elif _orb_has_declared_param '...'; then
 		_orb_store_rest
 	else
-		_orb_raise_invalid_arg "$args_count" "$arg"
+		if _orb_has_declared_param "$args_count"; then
+			_orb_raise_invalid_arg "invalid value for $args_count: $arg"
+		else
+			_orb_raise_invalid_arg "unexpected positional argument: $arg"
+		fi
 	fi
 }
 
@@ -90,7 +94,7 @@ _orb_try_inline_arg_fallback() {
 	elif _orb_has_declared_param "..." && _orb_param_catches "..." "$arg"; then
 		_orb_store_rest
 	else
-		_orb_raise_invalid_arg "$failed_arg"
+		_orb_raise_invalid_arg "invalid argument: $failed_arg"
 	fi
 }
 

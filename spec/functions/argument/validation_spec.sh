@@ -40,3 +40,21 @@ Describe '_orb_is_valid_in'
     The status should be success
   End
 End
+
+# _orb_raise_invalid_arg
+Describe '_orb_raise_invalid_arg'
+  _orb_raise_error() { echo "$1"; }
+  _orb_print_params_explanation() { echo "params"; }
+
+  It 'passes message through and appends params explanation'
+    When call _orb_raise_invalid_arg "invalid argument: -e"
+		The output should include "invalid argument: -e"
+    The output should include "parameters"
+    The output should include "params"
+  End
+
+  It 'passes custom argument messages through'
+    When call _orb_raise_invalid_arg "unexpected positional argument: asd"
+		The output should include "unexpected positional argument: asd"
+  End
+End
