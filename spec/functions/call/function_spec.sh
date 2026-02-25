@@ -38,12 +38,12 @@ End
 Describe '_orb_get_current_function_descriptor'
   It 'includes namespace if present'
     When call _orb_get_current_function_descriptor test_fn test_namespace
-    The variable _orb_function_descriptor should equal "test_namespace -> $(orb_bold test_fn)"
+    The variable _orb_function_descriptor should equal "test_namespace -> test_fn"
   End
 
   It 'only fn if no namespace'
     When call _orb_get_current_function_descriptor test_fn
-    The variable _orb_function_descriptor should equal "$(orb_bold test_fn)"
+    The variable _orb_function_descriptor should equal "test_fn"
   End
 End
 
@@ -55,7 +55,7 @@ Describe '_orb_validate_current_function'
     _orb_function_name="--asd"
     When run _orb_validate_current_function
     The status should be failure
-    The output should eq "_orb_raise_error not a valid function name"
+    The output should eq "_orb_raise_error invalid function name"
   End
 
   It 'does not raise if not present'

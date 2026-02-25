@@ -25,14 +25,14 @@ _orb_get_current_function_descriptor() { # $1 = $_orb_function_name $2 = $_orb_n
 	local ns=$2
 
 	if [[ -n $ns ]]; then
-		_orb_function_descriptor="$ns -> $(orb_bold ${fn})"
+		_orb_function_descriptor="$ns -> ${fn}"
 	else
-		_orb_function_descriptor="$(orb_bold ${fn})"
+		_orb_function_descriptor="${fn}"
 	fi
 }
 
 _orb_validate_current_function() {
-	[[ -n $_orb_function_name ]] && ! orb_is_valid_variable_name $_orb_function_name && _orb_raise_error "not a valid function name"
+	[[ -n $_orb_function_name ]] && ! orb_is_valid_variable_name $_orb_function_name && _orb_raise_error "invalid function name"
 	return 0
 }
 

@@ -101,10 +101,10 @@ _orb_store_declared_param_aliases() {
 	local alias
 	for alias in "${aliases[@]}"; do
 		if orb_is_flag "$param" && ! orb_is_flag "$alias"; then
-			_orb_raise_invalid_declaration "Alias type mismatch $param|$alias"
+			_orb_raise_invalid_declaration "invalid alias declaration: type mismatch: $param|$alias"
 		fi
 		if orb_is_block "$param" && ! orb_is_block "$alias"; then
-			_orb_raise_invalid_declaration "Alias type mismatch $param|$alias"
+			_orb_raise_invalid_declaration "invalid alias declaration: type mismatch: $param|$alias"
 		fi
 
 		if [[ -n ${_orb_declared_param_aliases[$alias]} ]] && [[ ${_orb_declared_param_aliases[$alias]} != "$param" ]]; then
@@ -126,7 +126,7 @@ _orb_store_declared_param_variable_or_comment() {
 	elif $_orb_declared_raw; then
 		_orb_declared_comments[$param]="$var"
 	else
-		_orb_raise_invalid_declaration "$param: invalid variable name '$var'."
+		_orb_raise_invalid_declaration "invalid variable name: '$var'"
 	fi
 }
 

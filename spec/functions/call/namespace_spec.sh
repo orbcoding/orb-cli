@@ -216,7 +216,7 @@ Describe '_orb_validate_current_namespace'
     _orb_namespace_name="--asd"
     When run _orb_validate_current_namespace
     The status should be failure
-    The output should eq "_orb_raise_error not a valid namespace name"
+    The output should eq "_orb_raise_error invalid namespace name"
   End
 
   It 'does not raise if not present'

@@ -106,7 +106,7 @@ Describe '_orb_get_declared_params_and_start_indexes'
 
     When run _orb_get_declared_params_and_start_indexes
     The status should be failure
-    The output should equal "_orb_raise_invalid_declaration -b-|-f: invalid alias declaration"
+    The output should equal "_orb_raise_invalid_declaration invalid alias declaration: -b-|-f"
   End
 
   It 'allows equal sign as value when preceded by Default:'
@@ -128,7 +128,7 @@ Describe '_orb_get_declared_params_and_start_indexes'
 
     When run _orb_get_declared_params_and_start_indexes
     The status should be failure
-    The output should equal "_orb_raise_invalid_declaration note = comment: invalid param assignment"
+    The output should equal "_orb_raise_invalid_declaration invalid parameter assignment: note = comment"
   End
 End
 
@@ -241,7 +241,7 @@ Describe '_orb_store_declared_param_variable_or_comment'
     _orb_raise_invalid_declaration() { echo_fn "$@" && exit 1; }
     When run _orb_store_declared_param_variable_or_comment -f "invalid name" false
     The status should be failure
-    The output should equal "_orb_raise_invalid_declaration -f: invalid variable name 'invalid name'."
+    The output should equal "_orb_raise_invalid_declaration invalid variable name: 'invalid name'"
   End
 End
 

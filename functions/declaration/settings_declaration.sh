@@ -6,6 +6,9 @@ _orb_settings_declaration=(
     Multiple: true
   -r = _orb_setting_raw
     "Pass raw input arguments to called function"
+  '-v|--verbose' = _orb_setting_verbose
+    Default: false
+    "Show verbose output for debugging"
   --restore-fns = _orb_setting_restore_functions
     "Restore functions after call, as declared before sourcing function files."
 )

@@ -155,7 +155,7 @@ Describe '_orb_prevalidate_declared_param_options'
 
     When call _orb_prevalidate_declared_param_options -f
     The status should be failure
-    The output should equal "-f: Invalid option: invalid. Available options for boolean flags: Required: Default:"
+    The output should equal "-f: invalid option: invalid (available for boolean flags: Required: Default:)"
   End
 
   It 'should not raise anything if first is valid option'
@@ -242,7 +242,7 @@ Describe '_orb_get_declared_param_options_start_indexes'
     _orb_declared_params=(1)
     When run _orb_get_declared_param_options_start_indexes 1
     The status should be failure
-    The output should equal "Required: missing value"
+    The output should equal "missing value for option Required:"
   End
 
   It 'raises if non_catch_all option before another option'
@@ -252,7 +252,7 @@ Describe '_orb_get_declared_param_options_start_indexes'
     _orb_declared_params=(1)
     When run _orb_get_declared_param_options_start_indexes 1
     The status should be failure
-    The output should equal "Required: invalid value: Default:"
+    The output should equal "invalid value for option Required:; got: Default:"
   End
 End
 

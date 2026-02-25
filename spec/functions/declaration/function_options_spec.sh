@@ -60,14 +60,14 @@ Describe "_orb_get_function_options_start_indexes"
     declaration=(Raw: Raw: value)
     _orb_raise_invalid_declaration() { echo_fn "$@"; }
     When call _orb_get_function_options_start_indexes
-    The output should equal "_orb_raise_invalid_declaration Raw: invalid value: Raw:"
+    The output should equal "_orb_raise_invalid_declaration invalid value for option Raw:; got: Raw:"
   End
 
   It 'raises on option without value'
     declaration=(Raw: true Raw:)
     _orb_raise_invalid_declaration() { echo_fn "$@"; }
     When call _orb_get_function_options_start_indexes
-    The output should equal "_orb_raise_invalid_declaration Raw: missing value"
+    The output should equal "_orb_raise_invalid_declaration missing value for option Raw:"
   End
 End
 

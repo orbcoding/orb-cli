@@ -171,7 +171,7 @@ Describe '_orb_get_param_nested_option_declaration'
 
     When run _orb_get_param_nested_option_declaration Default: Help: opts store_ref
     The status should be failure
-    The output should eq "Help: missing value"
+    The output should eq "missing value for option Help:"
   End
   
   It 'raises if option without value inside'
@@ -180,7 +180,7 @@ Describe '_orb_get_param_nested_option_declaration'
 
     When run _orb_get_param_nested_option_declaration Default: IfPresent: opts store_ref
     The status should be failure
-    The output should eq "IfPresent: missing value"
+    The output should eq "missing value for option IfPresent:"
   End
   
   It 'raises if internal_opt not valid'
@@ -189,6 +189,6 @@ Describe '_orb_get_param_nested_option_declaration'
 
     When run _orb_get_param_nested_option_declaration Default: unknown opts store_ref
     The status should be failure
-    The output should eq "unknown invalid nested option for Default:"
+    The output should eq "invalid nested option: unknown (for Default:)"
   End
 End

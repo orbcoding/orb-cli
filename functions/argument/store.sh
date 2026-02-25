@@ -64,7 +64,7 @@ _orb_store_block() {
 		fi 
 	done
 
-	_orb_raise_error "'$arg' missing block end"
+	_orb_raise_error "missing block end: '$arg'"
 }
 
 _orb_store_inline_arg() {

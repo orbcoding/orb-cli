@@ -31,7 +31,7 @@ _orb_has_orb_settings_arguments() {
 
 _orb_raise_invalid_orb_settings_arg() {
   local invalid_arg="$1"
-  local error_msg="invalid option $invalid_arg\n\nAvailable options:\n\n"
+  local error_msg="invalid option: $invalid_arg\n\navailable options:\n\n"
 
   local settings
   local param; for param in "${_orb_declared_params[@]}"; do

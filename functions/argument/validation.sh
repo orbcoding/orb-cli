@@ -10,12 +10,15 @@ _orb_is_valid_in() {
 	orb_in_arr "$val" in_arr
 }
 
-_orb_raise_invalid_arg() { # $1 arg_key $2 arg_value/required
-	local arg
-	[[ ${1:0:1} == '-' ]] && ! orb_is_block "$1" && arg='flags' || arg='args'
-	local msg="invalid $arg: $1"
+_orb_raise_invalid_arg() { # $1 arg_key $2... arg_value
+	local arg=$1; shift
 
-	msg+="\n\n$(_orb_print_params_explanation)"
+	local msg="invalid argument: $arg"
+	if [[ $# -gt 0 ]]; then
+		msg+=" with value $*"
+	fi
+
+	msg+="\n\nparameters\n$(_orb_print_params_explanation)"
 
 	_orb_raise_error "$msg"
 }
@@ -24,7 +27,7 @@ _orb_raise_invalid_arg() { # $1 arg_key $2 arg_value/required
 _orb_post_validate_args() {
 	local param; for param in "${_orb_declared_params[@]}"; do
 		local required; _orb_get_param_option_value $param Required: required
-		[[ $required == true ]] && ! _orb_has_arg_value "$param" && _orb_raise_error "$param is required"
+		[[ $required == true ]] && ! _orb_has_arg_value "$param" && _orb_raise_error "missing required argument: $param"
 	done
 }
 

@@ -19,7 +19,7 @@ Describe '_orb_collect_function_args'
     It 'raises error if receive input args'
       When run _orb_collect_function_args 1 2 3
       The status should be failure 
-      The output should equal "does not accept arguments" 
+      The output should equal "function does not accept arguments" 
     End
 
     It 'returns without parsing if no args received'
@@ -146,7 +146,7 @@ Describe '_orb_collect_inline_arg'
     _orb_declared_params=(-f)
     When call _orb_collect_inline_arg 1
     The status should be failure
-    The output should equal "_orb_raise_invalid_arg 1 with value 1"
+		The output should equal "_orb_raise_invalid_arg 1 1"
   End
 End
 

@@ -133,7 +133,7 @@ Describe '_orb_store_block'
     args_remaining=(-b- followed by args)
     When call _orb_store_block -b-
     The status should be failure
-    The variable "spec_args[@]" should equal "_orb_raise_error '-b-' missing block end"
+    The variable "spec_args[@]" should equal "_orb_raise_error missing block end: '-b-'"
   End
 End
 

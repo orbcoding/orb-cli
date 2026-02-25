@@ -25,7 +25,7 @@ Describe '_orb_raise_invalid_declaration'
 
   It 'calls raise error with invalid declaration error'
     When call _orb_raise_invalid_declaration "error message"
-    The output should equal "Invalid declaration. error message"
+    The output should equal "declaration: error message"
   End
 End
 
@@ -50,21 +50,21 @@ Describe '_orb_validate_declared_param_assignment'
     _orb_declared_raw=false
     When run _orb_validate_declared_param_assignment '-f|1' '-f' file true
     The status should be failure
-    The output should eq "-f|1: invalid alias declaration"
+    The output should eq "invalid alias declaration: -f|1"
   End
 
   It 'fails for invalid param assignment context'
     _orb_declared_raw=false
     When run _orb_validate_declared_param_assignment note note comment true
     The status should be failure
-    The output should eq "note = comment: invalid param assignment"
+    The output should eq "invalid parameter assignment: note = comment"
   End
 
   It 'fails for invalid variable when not raw'
     _orb_declared_raw=false
     When run _orb_validate_declared_param_assignment -f -f "invalid name" false
     The status should be failure
-    The output should eq "-f: invalid variable name 'invalid name'."
+    The output should eq "invalid variable name: 'invalid name'"
   End
 End
 
@@ -100,7 +100,7 @@ Describe '_orb_postvalidate_declared_params_options_catchs'
     declare -A _orb_declared_option_start_indexes=([Catch:]=0)
     When run _orb_postvalidate_declared_params_options_catchs
     The status should be failure
-    The output should equal "_orb_raise_invalid_declaration -f: Invalid Catch: value: 1. Available values: any flag block dash"
+    The output should equal "_orb_raise_invalid_declaration -f: invalid catch value: 1 (available: any flag block dash)"
   End
 End
 
@@ -121,7 +121,7 @@ Describe '_orb_postvalidate_declared_params_options_requireds'
     _orb_declared_option_values=(unknown)
     When run _orb_postvalidate_declared_params_options_requireds
     The status should be failure
-    The output should equal "_orb_raise_invalid_declaration -f: Invalid Required: value: unknown. Available values: true false"
+    The output should equal "_orb_raise_invalid_declaration -f: invalid required value: unknown (available: true false)"
   End
 End
 
@@ -142,7 +142,7 @@ Describe '_orb_postvalidate_declared_params_options_multiples'
     _orb_declared_option_values=(unknown) 
     When run _orb_postvalidate_declared_params_options_multiples
     The status should be failure
-    The output should equal "_orb_raise_invalid_declaration -f: Invalid Multiple: value: unknown. Available values: true false"
+    The output should equal "_orb_raise_invalid_declaration -f: invalid multiple value: unknown (available: true false)"
   End
 End
 
@@ -174,7 +174,7 @@ Describe '_orb_postvalidate_declared_params_incompatible_options'
     declare -A _orb_declared_option_lengths=([Multiple:]=1 [In:]=2)
     When run _orb_postvalidate_declared_params_incompatible_options
     The status should be failure
-    The output should equal "_orb_raise_invalid_declaration -f: Incompatible options: In:, Multiple: true"
+    The output should equal "_orb_raise_invalid_declaration -f: incompatible options: In:, Multiple: true"
   End
 End
 
@@ -192,7 +192,7 @@ Describe '_orb_is_valid_param_option'
     It 'fails for Multiple:'
       When call _orb_is_valid_param_option 1 Multiple: true
       The status should be failure
-      The output should equal "1: Invalid option: Multiple:. Available options for number params: Required: Default: In:"
+      The output should equal "1: invalid option: Multiple: (available for number params: Required: Default: In:)"
     End
   End
 
@@ -207,7 +207,7 @@ Describe '_orb_is_valid_param_option'
     It 'fails for Multiple:'
       When call _orb_is_valid_param_option -f Multiple: true
       The status should be failure
-      The output should equal "-f: Invalid option: Multiple:. Available options for boolean flags: Required: Default:"
+      The output should equal "-f: invalid option: Multiple: (available for boolean flags: Required: Default:)"
     End
   End
 
@@ -223,7 +223,7 @@ Describe '_orb_is_valid_param_option'
     It 'fails for Catch:'
       When call _orb_is_valid_param_option -f Catch: true
       The status should be failure
-      The output should equal "-f: Invalid option: Catch:. Available options for flag params: Required: Default: Multiple: In:"
+      The output should equal "-f: invalid option: Catch: (available for flag params: Required: Default: Multiple: In:)"
     End
   End
 
@@ -238,7 +238,7 @@ Describe '_orb_is_valid_param_option'
     It 'fails for In:'
       When call _orb_is_valid_param_option -f In: true
       The status should be failure
-      The output should equal "-f: Invalid option: In:. Available options for flag array params: Required: Default: Multiple:"
+      The output should equal "-f: invalid option: In: (available for flag array params: Required: Default: Multiple:)"
     End
   End
 
@@ -251,7 +251,7 @@ Describe '_orb_is_valid_param_option'
     It 'fails for In:'
       When call _orb_is_valid_param_option -f- In: true
       The status should be failure
-      The output should equal "-f-: Invalid option: In:. Available options for blocks: Required: Default: Multiple:"
+      The output should equal "-f-: invalid option: In: (available for blocks: Required: Default: Multiple:)"
     End
   End
 
@@ -264,7 +264,7 @@ Describe '_orb_is_valid_param_option'
     It 'fails for In:'
       When call _orb_is_valid_param_option -- In: true
       The status should be failure
-      The output should equal "--: Invalid option: In:. Available options for --: Required: Default:"
+      The output should equal "--: invalid option: In: (available for --: Required: Default:)"
     End
   End
 
@@ -277,7 +277,7 @@ Describe '_orb_is_valid_param_option'
     It 'fails for In:'
       When call _orb_is_valid_param_option ... In: true
       The status should be failure
-      The output should equal "...: Invalid option: In:. Available options for ...: Required: Default: Catch:"
+      The output should equal "...: invalid option: In: (available for ...: Required: Default: Catch:)"
     End
   End
 End

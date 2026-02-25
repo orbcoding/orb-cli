@@ -47,10 +47,10 @@ _orb_is_function_options_start_index() {
 
 		if [[ -n $prev_start_i ]] && (( $prev_start_i == $options_i - 1 )); then
 			# option is value for previous option
-			_orb_raise_invalid_declaration "$prev_option invalid value: $current_option"
+			_orb_raise_invalid_declaration "invalid value for option $prev_option; got: $current_option"
 		elif [[ $options_i == $((${#declaration[@]} - 1)) ]]; then
 			# option is last str
-			_orb_raise_invalid_declaration "$current_option missing value"
+			_orb_raise_invalid_declaration "missing value for option $current_option"
 		else
 			return 0
 		fi

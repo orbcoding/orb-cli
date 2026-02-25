@@ -12,7 +12,7 @@ _orb_collect_function_args() {
 	
 	if [[ ${#_orb_declared_params[@]} == 0 ]]; then
 		if [[ ${#args_remaining[@]} != 0 ]]; then
-			_orb_raise_error "does not accept arguments"
+			_orb_raise_error "function does not accept arguments"
 		else # no args to parse
 			return 0
 		fi
@@ -76,7 +76,7 @@ _orb_collect_inline_arg() {
 	elif _orb_has_declared_param '...'; then
 		_orb_store_rest
 	else
-		_orb_raise_invalid_arg "$args_count with value ${1:-\"\"}"
+		_orb_raise_invalid_arg "$args_count" "$arg"
 	fi
 }
 

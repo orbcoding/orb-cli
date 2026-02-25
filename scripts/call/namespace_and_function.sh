@@ -8,7 +8,7 @@ _orb_validate_current_function
 
 if [[ -z $_orb_function_name ]]; then
   if ! $_orb_setting_raw && ! $_orb_setting_help; then
-    _orb_raise_error "is a namespace, no function provided\n\n Use \`orb --help $_orb_namespace_chain_name\` for list of functions" "$_orb_namespace_chain_name"
+		_orb_raise_error "missing function for namespace: $_orb_namespace_chain_name\n\nUse \`orb --help $_orb_namespace_chain_name\` for list of functions" "$_orb_namespace_chain_name"
   fi
 else
   declare -n _orb_function_declaration="${_orb_function_name}_orb"

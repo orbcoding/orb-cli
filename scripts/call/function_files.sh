@@ -10,4 +10,4 @@ local _orb_file; for _orb_file in "${_orb_namespace_files[@]}"; do
   fi
 done
 
-orb_function_declared $_orb_function_name || _orb_raise_error "undefined"
+orb_function_declared $_orb_function_name || _orb_raise_error "undefined function: $_orb_function_name"

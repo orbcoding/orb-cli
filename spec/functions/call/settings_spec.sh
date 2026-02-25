@@ -43,9 +43,8 @@ Describe '_orb_raise_invalid_orb_settings_arg'
     _orb_raise_error() { echo -e "$@" && exit 1; }
 
     When run source scripts/call/settings.sh --unknown-flag
-    The output should include "invalid option --unknown-flag
-
-Available options:"
+    The output should include "invalid option: --unknown-flag"
+    The output should include "available options:"
 
     The status should be failure
   End

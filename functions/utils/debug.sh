@@ -27,7 +27,7 @@ function orb_print_args() { # print collected arguments, useful for debugging
   declare -n _orb_declared_comments_ref=_orb_declared_comments$_orb_variable_suffix
   declare -n _orb_declared_param_suffixes_ref=_orb_declared_param_suffixes$_orb_variable_suffix
 
-  echo -e "$_orb_function_descriptor_ref - Received argument values:\n"
+  echo -e "$_orb_function_descriptor_ref: received arguments:\n"
 
   local _orb_msg="$(orb_bold "§Variable:§Value:")\n"
 

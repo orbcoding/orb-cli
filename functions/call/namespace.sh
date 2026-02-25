@@ -44,7 +44,7 @@ _orb_get_current_namespace_from_args() {
 			_orb_set_namespace_chain_name_from_chain
 			return 2
 		else
-			local error="not a valid namespace and \$ORB_DEFAULT_NAMESPACE not set. \n\n"
+			local error="invalid namespace and \$ORB_DEFAULT_NAMESPACE is not set\n\n"
 			error+="$(_orb_print_available_namespaces)"
 			_orb_raise_error "$error" "$(orb_bold "${1-\"\"}")" false
 		fi
@@ -132,7 +132,7 @@ _orb_get_current_namespace_from_file_structure() {
 		_orb_set_namespace_chain_name_from_chain
 		local last_i=$(( ${#_orb_namespace_chain[@]} - 1 ))
 		_orb_namespace_name="${_orb_namespace_chain[$last_i]}"
-		orb_is_valid_variable_name $_orb_namespace_name || _orb_raise_error "not a valid namespace name"
+		orb_is_valid_variable_name $_orb_namespace_name || _orb_raise_error "invalid namespace name"
 	else
 		return 1
   fi
@@ -163,6 +163,6 @@ _orb_get_namespace_shift_steps() {
 }
 
 _orb_validate_current_namespace() {
-	[[ -n $_orb_namespace_name ]] && ! orb_is_valid_variable_name $_orb_namespace_name && _orb_raise_error "not a valid namespace name"
+	[[ -n $_orb_namespace_name ]] && ! orb_is_valid_variable_name $_orb_namespace_name && _orb_raise_error "invalid namespace name"
 	return 0
 }

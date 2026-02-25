@@ -6,7 +6,7 @@ orb_raise_error_orb=(
   -k = kill_script "Kill script instead of exit, even if subshell"
     Default: true
   -t = trace "show stack trace"
-    Default: true
+    Default: IfPresent: '$_orb_setting_verbose'
 )
 function orb_raise_error() {
   source "$_orb_bin"
@@ -25,7 +25,7 @@ _orb_raise_error() {
   [[ $descriptor == false ]] && descriptor=""
   local descriptor; orb_if_present descriptor '$descriptor || $_orb_function_descriptor'
 
-  local print_trace=${3-true}
+  local print_trace; orb_if_present print_trace '$_orb_setting_verbose || $1 || false'
   local kill_script=${4-false}
 
   orb_print_error "$msg" "$descriptor"
@@ -51,13 +51,13 @@ function orb_print_error() { #
   local descriptor="$2"
   orb_if_present descriptor '$descriptor || $_orb_function_descriptor_history_0 || $_orb_function_descriptor'
 
-	error=(
-    "${orb_red}${orb_bold}Error:${orb_normal}"
-    "$descriptor"
-    "$msg"
-  )
+  local prefix="orb:"
 
-	echo -e "${error[*]}" >&2
+  if [[ -n "$descriptor" ]]; then
+		echo -e "$prefix $descriptor: $msg" >&2
+  else
+		echo -e "$prefix $msg" >&2
+  fi
 };
 
 # orb_kill_script

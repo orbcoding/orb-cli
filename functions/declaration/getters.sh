@@ -124,7 +124,7 @@ _orb_get_param_nested_option_declaration() {
     # get option value without nested options which is defined at the start of the option value
     _orb_on_opt=true
   elif ! orb_in_arr "$_orb_nested_opt" _orb_available_opts; then
-    _orb_raise_error "$_orb_nested_opt invalid nested option for $_orb_opt"
+    _orb_raise_error "invalid nested option: $_orb_nested_opt (for $_orb_opt)"
   fi
 
   for _orb_opt in "${_orb_raw_opts[@]}"; do
@@ -143,7 +143,7 @@ _orb_get_param_nested_option_declaration() {
   if ! $_orb_on_opt; then
     return 1
   elif [[ "${#_orb_tmp_store[@]}" == 0 ]]; then 
-    [[ "$_orb_nested_opt" == false ]] && return 1 || _orb_raise_invalid_declaration "$_orb_nested_opt missing value"
+    [[ "$_orb_nested_opt" == false ]] && return 1 || _orb_raise_invalid_declaration "missing value for option $_orb_nested_opt"
   fi
 
   _orb_store_ref=(${_orb_tmp_store[@]})
