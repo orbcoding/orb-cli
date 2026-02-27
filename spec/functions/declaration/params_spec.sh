@@ -35,6 +35,8 @@ Describe '_orb_get_declared_params_and_start_indexes'
   declare -a _orb_declared_params
   declare -A _orb_declared_param_aliases
   declare -A _orb_declared_vars
+  declare -A _orb_declared_param_display_tokens=()
+  declare -A _orb_declared_param_suffixes=()
   declaration=("${_orb_function_declaration[@]}")
 
   It 'stores args, vars and start indexes'
@@ -83,6 +85,8 @@ Describe '_orb_get_declared_params_and_start_indexes'
     The variable "_orb_declared_param_aliases[-b]" should equal "-b"
     The variable "_orb_declared_param_aliases[--boolean]" should equal "-b"
     The variable "_orb_declared_param_aliases[--file]" should equal "-f"
+    The variable "_orb_declared_param_display_tokens[-b]" should equal "-b|--boolean"
+    The variable "_orb_declared_param_display_tokens[-f]" should equal "-f|--file"
     The variable "_orb_declared_param_suffixes[-f]" should equal "1"
   End
 

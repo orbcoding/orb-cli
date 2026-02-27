@@ -93,6 +93,9 @@ _orb_store_function_options() {
       'Raw:')
         _orb_declared_raw="${value[@]}"
         ;;
+			'Description:')
+				_orb_declared_comments[description]="${value[*]}"
+				;;
     esac
 
     ((options_i++))

@@ -92,4 +92,13 @@ Describe '_orb_store_function_options'
     When call _orb_store_function_options
     The variable "_orb_declared_raw" should eq true
   End
+
+  It 'stores Description:'
+    declaration=(Description: "Function description")
+    declared_function_options_start_indexes=(0)
+    declared_function_options_lengths=(2)
+
+    When call _orb_store_function_options
+    The variable "_orb_declared_comments[description]" should eq "Function description"
+  End
 End

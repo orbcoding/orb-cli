@@ -24,6 +24,7 @@ _orb_get_declared_params_and_start_indexes() {
 
 			_orb_store_declared_param_suffix "$param" "$param_start_i" "$i"
 			_orb_store_declared_param_start_index "$param" "$param_start_i"
+			_orb_store_declared_param_display_token "$param" "$param_raw"
 			_orb_declared_params+=("$param")
 			_orb_store_declared_param_aliases "$param" "${param_keys[@]}"
 			_orb_store_declared_param_variable_or_comment "$param" "$var" "$valid_var"
@@ -73,7 +74,7 @@ _orb_store_declared_param_suffix() {
 	local equals_i=$3
 
 	if [[ $param_start_i == $((equals_i - 2)) ]]; then
-		_orb_declared_param_suffixes[$param]=${declaration[$equals_i-1]}
+		_orb_declared_param_suffixes["$param"]=${declaration[$equals_i-1]}
 	fi
 }
 
@@ -82,10 +83,16 @@ _orb_store_declared_param_suffix() {
 _orb_store_declared_param_start_index() {
 	local param=$1
 	local param_start_i=$2
-	if [[ -n ${declared_params_start_indexes[$param]} ]]; then
+	if [[ -n ${declared_params_start_indexes["$param"]} ]]; then
 		_orb_raise_invalid_declaration "$param: multiple definitions"
 	fi
-	declared_params_start_indexes[$param]=$param_start_i
+	declared_params_start_indexes["$param"]=$param_start_i
+}
+
+_orb_store_declared_param_display_token() {
+	local param=$1
+	local token=$2
+	_orb_declared_param_display_tokens["$param"]="$token"
 }
 
 # Register all aliases to one canonical key.
@@ -107,10 +114,10 @@ _orb_store_declared_param_aliases() {
 			_orb_raise_invalid_declaration "invalid alias declaration: type mismatch: $param|$alias"
 		fi
 
-		if [[ -n ${_orb_declared_param_aliases[$alias]} ]] && [[ ${_orb_declared_param_aliases[$alias]} != "$param" ]]; then
+		if [[ -n ${_orb_declared_param_aliases["$alias"]} ]] && [[ ${_orb_declared_param_aliases["$alias"]} != "$param" ]]; then
 			_orb_raise_invalid_declaration "$alias: multiple definitions"
 		fi
-		_orb_declared_param_aliases[$alias]="$param"
+		_orb_declared_param_aliases["$alias"]="$param"
 	done
 }
 
@@ -122,9 +129,9 @@ _orb_store_declared_param_variable_or_comment() {
 	local valid_var=$3
 
 	if $valid_var; then
-		_orb_declared_vars[$param]="$var"
+		_orb_declared_vars["$param"]="$var"
 	elif $_orb_declared_raw; then
-		_orb_declared_comments[$param]="$var"
+		_orb_declared_comments["$param"]="$var"
 	else
 		_orb_raise_invalid_declaration "invalid variable name: '$var'"
 	fi
@@ -139,10 +146,10 @@ _orb_get_declared_params_lengths() {
 			local ends_before=${#declaration[@]}
 		else
 			# Not last declared - Ends before next declared
-			local ends_before=${declared_params_start_indexes[${_orb_declared_params[$counter]}]}
+			local ends_before=${declared_params_start_indexes["${_orb_declared_params[$counter]}"]}
 		fi
 
-		declared_params_lengths[$param]=$(( $ends_before - ${declared_params_start_indexes[$param]} ))
+		declared_params_lengths["$param"]=$(( $ends_before - ${declared_params_start_indexes["$param"]} ))
 
 		((counter++))
 	done

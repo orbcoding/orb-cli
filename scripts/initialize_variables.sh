@@ -1,5 +1,5 @@
 # Static initialized once
-declare -ga _orb_available_function_options=( Raw: )
+declare -ga _orb_available_function_options=( Description: Raw: )
 declare -ga _orb_available_function_option_raw_values=( true false )
 
 declare -ga _orb_available_param_options=( Required: Default: In: Catch: Multiple: )
@@ -7,9 +7,9 @@ declare -ga _orb_available_param_options_help=( Required: Default: In: Catch: Mu
 
 declare -ga _orb_available_param_options_number=( Required: Default: In: )
 declare -ga _orb_available_param_options_boolean_flag=( Required: Default: )
-declare -ga _orb_available_param_options_value_flag=( Required: Default: Multiple: In: )
+declare -ga _orb_available_param_options_single_value_flag=( Required: Default: Multiple: In: )
 # flag params with suffix > 1 
-declare -ga _orb_available_param_options_array_flag=( Required: Default: Multiple: )
+declare -ga _orb_available_param_options_array_value_flag=( Required: Default: Multiple: )
 declare -ga _orb_available_param_options_block=( Required: Default: Multiple: )
 declare -ga _orb_available_param_options_dash=( Required: Default: )
 declare -ga _orb_available_param_options_rest=( Required: Default: Catch: )
@@ -46,6 +46,7 @@ declare -ga _orb_history_variables=(
 
   _orb_declared_params
   _orb_declared_param_aliases
+  _orb_declared_param_display_tokens
   _orb_declared_param_suffixes
   _orb_declared_vars
   _orb_declared_comments

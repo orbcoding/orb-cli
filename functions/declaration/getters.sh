@@ -73,6 +73,8 @@ _orb_get_param_option_value() {
   fi
 
   # If finding present option with present value or plain default value
+  local _orb_present_store=()
+  local _orb_default_value=()
   if _orb_get_param_nested_option_declaration Default: IfPresent: _orb_declaration _orb_present_store && \
     orb_if_present _orb_default_value "${_orb_present_store[*]}" || \
     _orb_get_param_nested_option_declaration Default: false _orb_declaration _orb_default_value; then

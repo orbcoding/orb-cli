@@ -4,7 +4,7 @@ local _orb_file; for _orb_file in "${_orb_namespace_files[@]}"; do
     _orb_script_path="$_orb_file"
     _orb_script_file="$(basename $_orb_file)"
     _orb_script_dir="$(dirname "$_orb_file")"
-    source "$_orb_root/scripts/call/source_presource.sh"
+    ! $_orb_setting_help && source "$_orb_root/scripts/call/source_presource.sh"
     source "$_orb_file"
     break
   fi

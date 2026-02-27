@@ -39,4 +39,4 @@ echo_fn() {
 
 
 ORB_KILL_SCRIPT_ON_ERROR=false
-
+ORB_SHELLSPEC=true

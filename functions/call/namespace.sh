@@ -46,7 +46,7 @@ _orb_get_current_namespace_from_args() {
 		else
 			local error="invalid namespace and \$ORB_DEFAULT_NAMESPACE is not set\n\n"
 			error+="$(_orb_print_available_namespaces)"
-			_orb_raise_error "$error" "$(orb_bold "${1-\"\"}")" false
+			_orb_raise_error "$error" "${1-\"\"}" false
 		fi
 	fi
 }
@@ -81,7 +81,7 @@ _orb_collect_available_namespaces() {
 
 _orb_print_available_namespaces() {
 	local msg=()
-	msg+=("$(orb_bold 'Available namespaces:')\n")
+	msg+=("Available namespaces:\n")
 
 	local ns; for ns in "${_orb_namespaces[@]}"; do
 		msg+=("  $ns\n")

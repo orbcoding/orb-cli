@@ -80,7 +80,7 @@ _orb_postvalidate_declared_params_options_multiples() {
 
 _orb_postvalidate_declared_params_incompatible_options() {
 	local param; for param in "${_orb_declared_params[@]}"; do
-		if _orb_has_declared_value_flag "$param" && _orb_param_option_value_is "$param" "Multiple:" true && _orb_get_param_option_declaration "$param" "In:"; then
+		if _orb_has_declared_single_value_flag "$param" && _orb_param_option_value_is "$param" "Multiple:" true && _orb_get_param_option_declaration "$param" "In:"; then
 			_orb_raise_invalid_declaration "$param: incompatible options: In:, Multiple: true"
 		fi
 	done
@@ -96,10 +96,10 @@ _orb_is_valid_param_option() {
 		error="$param: invalid option: $option (available for number params: ${_orb_available_param_options_number[*]})"
 	elif _orb_has_declared_boolean_flag $param && ! orb_in_arr "$option" _orb_available_param_options_boolean_flag; then
 		error="$param: invalid option: $option (available for boolean flags: ${_orb_available_param_options_boolean_flag[*]})"
-	elif _orb_has_declared_value_flag $param && ! orb_in_arr "$option" _orb_available_param_options_value_flag; then
-		error="$param: invalid option: $option (available for flag params: ${_orb_available_param_options_value_flag[*]})"
-	elif _orb_has_declared_array_flag_param $param && ! orb_in_arr "$option" _orb_available_param_options_array_flag; then
-		error="$param: invalid option: $option (available for flag array params: ${_orb_available_param_options_array_flag[*]})"
+	elif _orb_has_declared_single_value_flag $param && ! orb_in_arr "$option" _orb_available_param_options_single_value_flag; then
+		error="$param: invalid option: $option (available for flag params: ${_orb_available_param_options_single_value_flag[*]})"
+	elif _orb_has_declared_array_flag_param $param && ! orb_in_arr "$option" _orb_available_param_options_array_value_flag; then
+		error="$param: invalid option: $option (available for flag array params: ${_orb_available_param_options_array_value_flag[*]})"
 	elif orb_is_block $param && ! orb_in_arr "$option" _orb_available_param_options_block; then
 		error="$param: invalid option: $option (available for blocks: ${_orb_available_param_options_block[*]})"
 	elif orb_is_dash $param && ! orb_in_arr "$option" _orb_available_param_options_dash; then

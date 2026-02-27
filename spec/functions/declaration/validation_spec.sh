@@ -5,7 +5,6 @@ Include scripts/call/variables.sh
 Include scripts/initialize_variables.sh
 Include functions/utils/param_token.sh
 Include functions/utils/utils.sh
-Include functions/call/help.sh
 
 # _orb_prevalidate_declaration
 Describe '_orb_prevalidate_declaration'

@@ -8,8 +8,8 @@ declare -A orb_is_flag_args=(
 declare -A orb_is_input_flag_args=(
 	['1']='arg; CATCH_ANY'
 ); function orb_is_input_flag() {
-    # Single-letter flags: -f or +f
-    [[ "$1" =~ ^[-+][a-zA-Z]$ ]] || \
+    # Single-letter flags: -f or +f, or multiple: -fsa
+    [[ "$1" =~ ^[-+][a-zA-Z]+$ ]] || \
     # Multi-letter / hyphenated flags: --flag or +-flag
     [[ "$1" =~ ^(--|\+-)[a-zA-Z]+(-[a-zA-Z]+)*$ ]]
 }

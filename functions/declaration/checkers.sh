@@ -20,6 +20,14 @@ _orb_has_declared_value_flag() { # $1 param
 	[[ -n ${suffixes[$param]} ]]
 }
 
+_orb_has_declared_single_value_flag() { # $1 param
+	local param=$(_orb_get_declared_param_key "$1")
+	! _orb_has_declared_param $param && return 1
+	
+	declare -n suffixes="_orb_declared_param_suffixes$_orb_variable_suffix"
+	[[ ${suffixes[$param]} == 1 ]]
+}
+
 _orb_has_declared_array_flag_param() {
 	local param=$(_orb_get_declared_param_key "$1")
 	

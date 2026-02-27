@@ -13,7 +13,7 @@ _orb_is_valid_in() {
 _orb_raise_invalid_arg() { # $1 message
 	local msg="$1"
 
-	msg+="\n\nparameters\n$(_orb_print_params_explanation)"
+	msg+="\n\n$(_orb_print_params_explanation)"
 
 	_orb_raise_error "$msg"
 }

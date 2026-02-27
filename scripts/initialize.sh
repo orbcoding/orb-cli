@@ -30,4 +30,6 @@ source "$_orb_root/functions/argument/positional.sh"
 source "$_orb_root/functions/argument/store.sh"
 source "$_orb_root/functions/argument/validation.sh"
 
-source "$_orb_root/functions/call/help.sh"
+source "$_orb_root/functions/call/help_orb.sh"
+source "$_orb_root/functions/call/help_namespace.sh"
+source "$_orb_root/functions/call/help_function.sh"

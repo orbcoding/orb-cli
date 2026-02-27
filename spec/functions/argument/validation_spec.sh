@@ -49,7 +49,6 @@ Describe '_orb_raise_invalid_arg'
   It 'passes message through and appends params explanation'
     When call _orb_raise_invalid_arg "invalid argument: -e"
 		The output should include "invalid argument: -e"
-    The output should include "parameters"
     The output should include "params"
   End
 

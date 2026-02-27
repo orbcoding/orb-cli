@@ -70,6 +70,16 @@ Describe 'orb_is_input_flag'
     The status should be success
   End
 
+  It 'accepts multi flag'
+    When call orb_is_input_flag -fsa
+    The status should be success
+  End
+
+  It 'accepts reversed multiflag'
+    When call orb_is_input_flag +fsa
+    The status should be success
+  End
+
   It 'accepts reversed verbose flag (+-verbose-flag)'
     When call orb_is_input_flag +-verbose-flag
     The status should be success
