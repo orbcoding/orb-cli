@@ -16,6 +16,7 @@ Describe 'orb_pass'
     ... = rest 
       Required: false
     -- = dash
+      Required: false
   )
 
   spec_function() { source $_orb_root/bin/orb; callback; }

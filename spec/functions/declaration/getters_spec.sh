@@ -55,9 +55,9 @@ Describe '_orb_get_default_param_option_value'
     The variable store_ref should eq false
   End
 
-  It 'sets required false for --'
+  It 'sets required true for --'
     When call _orb_get_default_param_option_value -- Required: store_ref
-    The variable store_ref should eq false
+    The variable store_ref should eq true
   End
 
   It 'sets required true for others'

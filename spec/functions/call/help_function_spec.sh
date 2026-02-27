@@ -18,14 +18,18 @@ Describe '_orb_print_function_help'
 
       1 = action
         "action to perform"
-        Required: true
         Default: start
         In: start stop restart
+
+      2 = subcommand
+        "subcommand to execute"
+        Required: false
 
       -e\|--environment 1 = env
         "environment"
         Default: IfPresent: '$ORB_DEFAULT_ENV || development'
         In: production staging development
+        Required: true
 
       -b = force
         "force mode"
@@ -42,7 +46,7 @@ Describe '_orb_print_function_help'
       -t 2 = tags
         "tags list"
         Multiple: true
-        Default: alpha beta
+        Required: true
 
       -d- = compose_opts
         "docker compose opts"
@@ -54,8 +58,6 @@ Describe '_orb_print_function_help'
         Multiple: false
 
       -- = passthrough
-        "passthrough opts"
-        Default: '--verbose'
 
       ... = rest
         "remaining args"
@@ -89,68 +91,69 @@ Describe '_orb_print_function_help'
     orb docker start - Start docker containers
 
 SYNOPSIS
-    orb docker start action -r [-bix] [-e <env>] [-t <tags>{2}...] [-y <yes_flag>] [-z <z_values>{3}...] [-d- <compose_opts>... -d-]... [-o- <up_opts>... -o-] [args...] [-- <passthrough>]
+    orb docker start [OPTION]... -r -t <tags>{2}... <action> [<subcommand>] <rest>... [-- <passthrough>...]
 
 DESCRIPTION
     Start docker containers with various options
 
-PARAMETERS
-    action
+ARGUMENTS
+      <action>
         action to perform
-        Required:  yes
         Default:   start
-        In:        start | stop | restart
+        Allowed:   start | stop | restart
 
-    -r
-        restart mode
-        Required:  yes
+      <subcommand>
+        subcommand to execute
 
-    -b
+    * <rest>...
+        remaining args
+        Default:   --fallback
+        Fallback:  $ORB_REST_DEFAULT || --fallback
+
+    * -- <passthrough>
+
+OPTIONS
+      -e, --environment <env>
+        environment
+        Default:   development
+        Fallback:  $ORB_DEFAULT_ENV || development
+        Allowed:   production | staging | development
+
+      -b
         force mode
-        Default:  true
+        Default:   true
 
-    -i
+      -i
         idle mode
 
-    -x
-        experimental flag
+    * -r
+        restart mode
 
-    -e, --environment <env>
-        environment
-        Default:  development
-        Resolve:  $ORB_DEFAULT_ENV || development
-        In:       production | staging | development
-
-    -t <tag>{2}
+      -t <tag>{2}
         tags list
-        Default:   alpha beta
         Multiple:  yes
 
-    -y <yes_flag>
-        yes flag with one value
-        Default:  yes
-
-    -z <z_value>{3}
-        z multi-value test
-        Default:   a b c
-        Multiple:  yes
-
-    -d- <compose_opts> -d-
+      -d- <compose_opts> -d-
         docker compose opts
         Default:   --ansi never
         Multiple:  yes
 
-    -o-, --up-options-- <up_opts> -o-
+      -o-, --up-options-- <up_opts> -o-
         docker compose up options
 
-    ...
-        remaining args
-        Required:  yes
-        Default:   --fallback
-        Resolve:   $ORB_REST_DEFAULT || --fallback
+      -x
+        experimental flag
 
-    --
-        passthrough opts
-        Default:  --verbose'
+      -y <yes_flag>
+        yes flag with one value
+        Default:   yes
+
+      -z <z_value>{3}
+        z multi-value test
+        Default:   a b c
+        Multiple:  yes
+
+LEGEND
+    * required'
   End
 End

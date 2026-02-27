@@ -197,45 +197,146 @@ _orb_help_get_synopsis_segment_for_param() {
   fi
 }
 
+_orb_help_param_has_default_decl() {
+  local param="$1"
+  _orb_get_param_option_declaration "$param" Default:
+}
+
+_orb_help_is_required_option() {
+  local param="$1"
+  local required=false
+  _orb_get_param_option_value "$param" Required: required >/dev/null 2>&1 || true
+  local default_value=''
+  local default_fallback=''
+  _orb_help_get_param_default_details "$param" default_value default_fallback
+  if [[ "$required" == true ]] && [[ -z "$default_value" ]] && [[ -z "$default_fallback" ]]; then
+    echo true
+  else
+    echo false
+  fi
+}
+
+_orb_help_get_positional_params_in_order() {
+  declare -n out_ref="$1"
+  declare -n declared_params=_orb_declared_params$_orb_variable_suffix
+  local nrs=()
+  local param
+  for param in "${declared_params[@]}"; do
+    orb_is_nr "$param" && nrs+=("$param")
+  done
+  IFS=$'\n' out_ref=($(sort -n <<< "${nrs[*]}"))
+  unset IFS
+}
+
+_orb_help_get_option_params_in_defined_order() {
+  declare -n out_ref="$1"
+  declare -n declared_params=_orb_declared_params$_orb_variable_suffix
+  local param
+  for param in "${declared_params[@]}"; do
+    if orb_is_nr "$param" || orb_is_rest "$param" || orb_is_dash "$param"; then
+      continue
+    fi
+    out_ref+=("$param")
+  done
+}
+
+_orb_help_get_argument_token() {
+  local param="$1"
+  declare -n declared_vars=_orb_declared_vars$_orb_variable_suffix
+
+  if orb_is_nr "$param"; then
+    printf '<%s>\n' "${declared_vars[$param]:-$param}"
+    return
+  fi
+  if orb_is_rest "$param"; then
+    local value_name="${declared_vars[$param]}"
+    [[ -z "$value_name" ]] && value_name='args'
+    printf '<%s>...\n' "$value_name"
+    return
+  fi
+  if orb_is_dash "$param"; then
+    local value_name="${declared_vars[$param]}"
+    [[ -z "$value_name" ]] && value_name='passthrough'
+    printf -- '-- <%s>\n' "$value_name"
+    return
+  fi
+}
+
+_orb_help_get_option_token_for_synopsis() {
+  local param="$1"
+  local token=$(_orb_help_get_param_primary_token "$param")
+
+  if _orb_has_declared_boolean_flag "$param"; then
+    printf '%s\n' "$token"
+    return
+  fi
+  if _orb_has_declared_value_flag "$param"; then
+    local placeholder=$(_orb_help_get_param_placeholder "$param")
+    local multiple=false
+    _orb_get_param_option_value "$param" Multiple: multiple >/dev/null 2>&1 || true
+    if [[ "$multiple" == true ]]; then
+      printf '%s %s...\n' "$token" "$placeholder"
+    else
+      printf '%s %s\n' "$token" "$placeholder"
+    fi
+    return
+  fi
+  if orb_is_block "$param"; then
+    local placeholder=$(_orb_help_get_param_placeholder "$param")
+    local segment="$token ${placeholder}... $token"
+    local multiple=false
+    _orb_get_param_option_value "$param" Multiple: multiple >/dev/null 2>&1 || true
+    [[ "$multiple" == true ]] && segment+="..."
+    printf '%s\n' "$segment"
+    return
+  fi
+}
+
 # ------------------------------
 # Synopsis & Description
 # ------------------------------
 _orb_build_help_synopsis_section() {
   local cli_descriptor=$(_orb_help_get_cli_descriptor)
   local header=$(_orb_help_format_header 'SYNOPSIS')
-  local ordered_params=()
-  _orb_help_get_ordered_params ordered_params
+  local synopsis_parts=()
 
-  local required_boolean_group=''
-  local optional_boolean_group=''
-  declare -A grouped_boolean_params=()
-  local emitted_boolean_groups=false
-
+  local option_params=()
+  _orb_help_get_option_params_in_defined_order option_params
+  local required_option_parts=()
+  local has_optional_options=false
   local param
-  for param in "${ordered_params[@]}"; do
-    if _orb_has_declared_boolean_flag "$param" && [[ "$param" =~ ^-[[:alnum:]]$ ]]; then
-      local required=$(_orb_help_get_param_required "$param")
-      local letter="${param:1:1}"
-      if [[ "$required" == true ]]; then
-        required_boolean_group+="$letter"
-      else
-        optional_boolean_group+="$letter"
-      fi
-      grouped_boolean_params[$param]=true
+  for param in "${option_params[@]}"; do
+    local required_option=$(_orb_help_is_required_option "$param")
+    local token=$(_orb_help_get_option_token_for_synopsis "$param")
+    if [[ "$required_option" == true ]]; then
+      required_option_parts+=("$token")
+    else
+      has_optional_options=true
+    fi
+  done
+  $has_optional_options && synopsis_parts+=("[OPTION]...")
+  synopsis_parts+=("${required_option_parts[@]}")
+
+  local positional_params=()
+  _orb_help_get_positional_params_in_order positional_params
+  for param in "${positional_params[@]}"; do
+    local arg_token=$(_orb_help_get_argument_token "$param")
+    local required=$(_orb_help_get_param_required "$param")
+    if [[ "$required" == true ]]; then
+      synopsis_parts+=("$arg_token")
+    else
+      synopsis_parts+=("[$arg_token]")
     fi
   done
 
-  local synopsis_parts=()
-  for param in "${ordered_params[@]}"; do
-    if [[ -n "${grouped_boolean_params[$param]}" ]]; then
-      if ! $emitted_boolean_groups; then
-        [[ -n "$required_boolean_group" ]] && synopsis_parts+=("-$required_boolean_group")
-        [[ -n "$optional_boolean_group" ]] && synopsis_parts+=("[-$optional_boolean_group]")
-        emitted_boolean_groups=true
-      fi
-      continue
+  declare -n declared_params=_orb_declared_params$_orb_variable_suffix
+  for param in "${declared_params[@]}"; do
+    orb_is_rest "$param" && synopsis_parts+=("$(_orb_help_get_argument_token "$param")")
+  done
+  for param in "${declared_params[@]}"; do
+    if orb_is_dash "$param"; then
+      synopsis_parts+=("[$(_orb_help_get_argument_token "$param")...]")
     fi
-    synopsis_parts+=("$(_orb_help_get_synopsis_segment_for_param "$param")")
   done
 
   local synopsis_line="$cli_descriptor"
@@ -493,7 +594,7 @@ _orb_help_get_param_description() {
   declare -n declared_vars=_orb_declared_vars$_orb_variable_suffix
   declare -n declared_comments=_orb_declared_comments$_orb_variable_suffix
   local description="${declared_comments[$param]}"
-  if [[ -z "$description" ]] && ! _orb_has_declared_value_flag "$param" && ! orb_is_block "$param"; then
+  if [[ -z "$description" ]] && ! _orb_has_declared_value_flag "$param" && ! orb_is_block "$param" && ! orb_is_nr "$param" && ! orb_is_rest "$param" && ! orb_is_dash "$param"; then
     description="${declared_vars[$param]}"
   fi
   echo "$description"
@@ -502,10 +603,10 @@ _orb_help_get_param_description() {
 _orb_help_get_param_default_details() {
   local param="$1"
   declare -n default_value_ref="$2"
-  declare -n default_resolve_ref="$3"
+  declare -n default_fallback_ref="$3"
 
   default_value_ref=''
-  default_resolve_ref=''
+  default_fallback_ref=''
 
   local default=()
   if _orb_get_param_option_value "$param" Default: default && [[ -n "${default[*]}" ]]; then
@@ -528,11 +629,11 @@ _orb_help_get_param_default_details() {
 
   local default_decl=()
   if _orb_get_param_option_declaration "$param" Default: default_decl; then
-    local resolve_values=()
-    if _orb_get_param_nested_option_declaration Default: IfPresent: default_decl resolve_values; then
-      default_resolve_ref="${resolve_values[*]}"
-      [[ "$default_resolve_ref" == "'"*"'" ]] && default_resolve_ref="${default_resolve_ref:1:${#default_resolve_ref}-2}"
-      [[ "$default_resolve_ref" == '"'*'"' ]] && default_resolve_ref="${default_resolve_ref:1:${#default_resolve_ref}-2}"
+    local fallback_values=()
+    if _orb_get_param_nested_option_declaration Default: IfPresent: default_decl fallback_values; then
+      default_fallback_ref="${fallback_values[*]}"
+      [[ "$default_fallback_ref" == "'"*"'" ]] && default_fallback_ref="${default_fallback_ref:1:${#default_fallback_ref}-2}"
+      [[ "$default_fallback_ref" == '"'*'"' ]] && default_fallback_ref="${default_fallback_ref:1:${#default_fallback_ref}-2}"
     fi
   fi
 }
@@ -582,13 +683,14 @@ _orb_help_get_option_label_width() {
   [[ -n "$default_value" ]] && (( option_label_width < 8 )) && option_label_width=8
   [[ -n "$in_value" ]] && (( option_label_width < 3 )) && option_label_width=3
   [[ -n "$multiple" ]] && (( option_label_width < 9 )) && option_label_width=9
+  (( option_label_width < 9 )) && option_label_width=9
   echo "$option_label_width"
 }
 
 _orb_help_print_param_options() {
   local required="$1"
   local default_value="$2"
-  local default_resolve="$3"
+  local default_fallback="$3"
   local in_value="$4"
   local multiple="$5"
   local terminal_width=$6
@@ -598,45 +700,143 @@ _orb_help_print_param_options() {
 
   [[ -n "$required" ]] && _orb_print_wrapped_help_field 'Required:' "$required" "$value_width" "$option_label_width" "        "
   [[ -n "$default_value" ]] && _orb_print_wrapped_help_field 'Default:' "$default_value" "$value_width" "$option_label_width" "        "
-  [[ -n "$default_resolve" ]] && _orb_print_wrapped_help_field 'Resolve:' "$default_resolve" "$value_width" "$option_label_width" "        "
-  [[ -n "$in_value" ]] && _orb_print_wrapped_help_field 'In:' "$in_value" "$value_width" "$option_label_width" "        "
+  [[ -n "$default_fallback" ]] && _orb_print_wrapped_help_field 'Fallback:' "$default_fallback" "$value_width" "$option_label_width" "        "
+  [[ -n "$in_value" ]] && _orb_print_wrapped_help_field 'Allowed:' "$in_value" "$value_width" "$option_label_width" "        "
   [[ -n "$multiple" ]] && _orb_print_wrapped_help_field 'Multiple:' "$multiple" "$value_width" "$option_label_width" "        "
 }
 
 # ------------------------------
 # Print Parameters Explanation
 # ------------------------------
-_orb_print_params_explanation() {
-  declare -n declared_params=_orb_declared_params$_orb_variable_suffix
-  [[ ${#declared_params[@]} == 0 ]] && return 1
+_orb_help_get_render_layout() {
+  declare -n terminal_width_ref=$1
+  declare -n max_value_width_ref=$2
+  declare -n value_width_ref=$3
+  declare -n description_width_ref=$4
 
-  local terminal_width=$(_orb_help_get_terminal_width)
+  terminal_width_ref=$(_orb_help_get_terminal_width)
   local label_width=12
   local field_prefix_len=$((6 + label_width + 2))
-  local value_width=$((terminal_width - field_prefix_len))
-  local description_width=$((terminal_width - 8))
-  (( description_width < 20 )) && description_width=20
-  (( value_width < 20 )) && value_width=20
-  local max_value_width=56
+  value_width_ref=$((terminal_width_ref - field_prefix_len))
+  description_width_ref=$((terminal_width_ref - 8))
+  (( description_width_ref < 20 )) && description_width_ref=20
+  (( value_width_ref < 20 )) && value_width_ref=20
+
+  max_value_width_ref=56
   if [[ "$ORB_HELP_DESC_WIDTH" =~ ^[0-9]+$ ]] && (( ORB_HELP_DESC_WIDTH > 0 )); then
-    max_value_width=$ORB_HELP_DESC_WIDTH
-    (( description_width > ORB_HELP_DESC_WIDTH )) && description_width=$ORB_HELP_DESC_WIDTH
+    max_value_width_ref=$ORB_HELP_DESC_WIDTH
+    (( description_width_ref > ORB_HELP_DESC_WIDTH )) && description_width_ref=$ORB_HELP_DESC_WIDTH
   fi
-  (( value_width > max_value_width )) && value_width=$max_value_width
+  (( value_width_ref > max_value_width_ref )) && value_width_ref=$max_value_width_ref
+}
 
-  printf '%s%sPARAMETERS%s\n' "$ORB_BOLD" "$ORB_BLUE" "$ORB_NORMAL"
+_orb_help_has_required_entries() {
+  local positional_params=()
+  _orb_help_get_positional_params_in_order positional_params
+  local param
+  for param in "${positional_params[@]}"; do
+    local req=false
+    _orb_get_param_option_value "$param" Required: req >/dev/null 2>&1 || true
+    local nr_default=''
+    local nr_fallback=''
+    _orb_help_get_param_default_details "$param" nr_default nr_fallback
+    if [[ "$req" != false ]] && [[ -z "$nr_default" ]] && [[ -z "$nr_fallback" ]]; then
+      return 0
+    fi
+  done
 
-  local ordered_params=()
-  _orb_help_get_ordered_params ordered_params
-  local param_i
-  for param_i in "${!ordered_params[@]}"; do
-    local param="${ordered_params[$param_i]}"
+  declare -n declared_params=_orb_declared_params$_orb_variable_suffix
+  for param in "${declared_params[@]}"; do
+    if orb_is_rest "$param" && [[ "$(_orb_help_get_param_required "$param")" == true ]]; then
+      return 0
+    fi
+  done
+
+  local option_params=()
+  _orb_help_get_option_params_in_defined_order option_params
+  for param in "${option_params[@]}"; do
+    if [[ "$(_orb_help_is_required_option "$param")" == true ]] && _orb_has_declared_boolean_flag "$param"; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+_orb_help_build_arguments_section() {
+  local terminal_width=$1
+  local max_value_width=$2
+  local value_width=$3
+  local description_width=$4
+
+  printf '%s%sARGUMENTS%s\n' "$ORB_BOLD" "$ORB_BLUE" "$ORB_NORMAL"
+
+  local positional_params=()
+  _orb_help_get_positional_params_in_order positional_params
+  local arg_items=()
+  local param
+  for param in "${positional_params[@]}"; do
+    arg_items+=("$param")
+  done
+  declare -n declared_params=_orb_declared_params$_orb_variable_suffix
+  for param in "${declared_params[@]}"; do orb_is_rest "$param" && arg_items+=("$param"); done
+  for param in "${declared_params[@]}"; do orb_is_dash "$param" && arg_items+=("$param"); done
+
+  local idx
+  for idx in "${!arg_items[@]}"; do
+    param="${arg_items[$idx]}"
+    local token=$(_orb_help_get_argument_token "$param")
+
+    local is_required=false
+    if orb_is_nr "$param"; then
+      local req=false
+      _orb_get_param_option_value "$param" Required: req >/dev/null 2>&1 || true
+      local nr_default=''
+      local nr_fallback=''
+      _orb_help_get_param_default_details "$param" nr_default nr_fallback
+      if [[ "$req" != false ]] && [[ -z "$nr_default" ]] && [[ -z "$nr_fallback" ]]; then
+        is_required=true
+      fi
+    else
+      [[ "$(_orb_help_get_param_required "$param")" == true ]] && is_required=true
+    fi
+
+    local prefix='      '
+    [[ "$is_required" == true ]] && prefix='    * '
+
+    local default_value=''
+    local default_fallback=''
+    _orb_help_get_param_default_details "$param" default_value default_fallback
+    local in_value=$(_orb_help_get_param_in_value "$param")
+    local description=$(_orb_help_get_param_description "$param")
+    local option_label_width=$(_orb_help_get_option_label_width '' "$default_value" "$in_value" '')
+
+    printf '%s%s%s%s\n' "$prefix" "$ORB_BOLD" "$ORB_BLUE" "$token$ORB_NORMAL"
+    [[ -n "$description" ]] && _orb_print_wrapped_help_description "$description" "$description_width"
+    _orb_help_print_param_options '' "$default_value" "$default_fallback" "$in_value" '' "$terminal_width" "$max_value_width" "$value_width" "$option_label_width"
+
+    (( idx < ${#arg_items[@]} - 1 )) && printf '\n'
+  done
+}
+
+_orb_help_build_options_section() {
+  local terminal_width=$1
+  local max_value_width=$2
+  local value_width=$3
+  local description_width=$4
+
+  printf '%s%sOPTIONS%s\n' "$ORB_BOLD" "$ORB_BLUE" "$ORB_NORMAL"
+
+  local option_params=()
+  _orb_help_get_option_params_in_defined_order option_params
+  local idx param
+  for idx in "${!option_params[@]}"; do
+    param="${option_params[$idx]}"
     local token=$(_orb_help_get_param_token_for_help "$param")
     local description=$(_orb_help_get_param_description "$param")
 
     local required=''
-    local required_flag=false
-    if _orb_get_param_option_value "$param" Required: required_flag && [[ "$required_flag" == true ]]; then
+    if [[ "$(_orb_help_is_required_option "$param")" == true ]] && _orb_has_declared_boolean_flag "$param"; then
       required='yes'
     fi
 
@@ -647,17 +847,45 @@ _orb_print_params_explanation() {
     fi
 
     local default_value=''
-    local default_resolve=''
-    _orb_help_get_param_default_details "$param" default_value default_resolve
+    local default_fallback=''
+    _orb_help_get_param_default_details "$param" default_value default_fallback
     local in_value=$(_orb_help_get_param_in_value "$param")
-    local option_label_width=$(_orb_help_get_option_label_width "$required" "$default_value" "$in_value" "$multiple")
+    local option_label_width=$(_orb_help_get_option_label_width '' "$default_value" "$in_value" "$multiple")
 
-    local colored_token=$(_orb_help_get_colored_param_token "$token")
-    printf '    %s\n' "$colored_token"
+    if [[ -n "$required" ]]; then
+      printf '    * %s%s%s%s\n' "$ORB_BOLD" "$ORB_BLUE" "$token" "$ORB_NORMAL"
+    else
+      printf '      %s%s%s%s\n' "$ORB_BOLD" "$ORB_BLUE" "$token" "$ORB_NORMAL"
+    fi
     [[ -n "$description" ]] && _orb_print_wrapped_help_description "$description" "$description_width"
+    _orb_help_print_param_options '' "$default_value" "$default_fallback" "$in_value" "$multiple" "$terminal_width" "$max_value_width" "$value_width" "$option_label_width"
 
-    (( option_label_width > 0 )) && _orb_help_print_param_options "$required" "$default_value" "$default_resolve" "$in_value" "$multiple" "$terminal_width" "$max_value_width" "$value_width" "$option_label_width"
-
-    (( param_i < ${#ordered_params[@]} - 1 )) && printf '\n'
+    (( idx < ${#option_params[@]} - 1 )) && printf '\n'
   done
+}
+
+_orb_help_build_legend_section() {
+  _orb_help_has_required_entries || return 1
+  printf '%s%sLEGEND%s\n    * required\n' "$ORB_BOLD" "$ORB_BLUE" "$ORB_NORMAL"
+}
+
+_orb_build_params_explanation_output() {
+  local terminal_width max_value_width value_width description_width
+  _orb_help_get_render_layout terminal_width max_value_width value_width description_width
+
+  local arguments_section options_section legend_section
+  arguments_section=$(_orb_help_build_arguments_section "$terminal_width" "$max_value_width" "$value_width" "$description_width")
+  options_section=$(_orb_help_build_options_section "$terminal_width" "$max_value_width" "$value_width" "$description_width")
+  legend_section=$(_orb_help_build_legend_section)
+
+  local output="$arguments_section\n\n$options_section"
+  [[ -n "$legend_section" ]] && output+="\n\n$legend_section"
+  echo -e "$output"
+}
+
+_orb_print_params_explanation() {
+  declare -n declared_params=_orb_declared_params$_orb_variable_suffix
+  [[ ${#declared_params[@]} == 0 ]] && return 1
+  local output=$(_orb_build_params_explanation_output)
+  [[ -n "$output" ]] && echo -e "$output"
 }
