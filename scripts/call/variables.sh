@@ -24,6 +24,7 @@ if [[ $1 != only_args_collection ]]; then
   declare _orb_function_descriptor
   declare _orb_function_exit_code
   declare _orb_script_path
+  declare _orb_script_lib
   declare _orb_script_file
   declare _orb_script_dir
 
