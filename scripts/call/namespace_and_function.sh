@@ -7,7 +7,7 @@ _orb_validate_current_namespace
 _orb_validate_current_function
 
 if [[ -z $_orb_function_name ]]; then
-  if ! $_orb_setting_raw && ! $_orb_setting_help; then
+  if ! $_orb_setting_raw && ! _orb_help_requested; then
 		_orb_raise_error "no function specified\n\nlist available functions with \`orb --help $_orb_namespace_chain_name\`" "$_orb_namespace_chain_name"
   fi
 else

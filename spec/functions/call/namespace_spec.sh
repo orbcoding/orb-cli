@@ -2,6 +2,7 @@ Include functions/call/namespace.sh
 Include functions/utils/text.sh
 Include functions/utils/utils.sh
 Include functions/utils/param_token.sh
+Include functions/call/help_orb.sh
 
 # _orb_collect_available_namespaces
 Describe '_orb_collect_available_namespaces'

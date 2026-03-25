@@ -36,7 +36,7 @@ _orb_get_current_namespace_from_args() {
 		done
 
 		_orb_set_namespace_chain_name_from_chain
-	elif ! $_orb_setting_help; then
+	elif ! _orb_help_requested; then
 		if [[ -n $ORB_DEFAULT_NAMESPACE ]]; then
 			_orb_namespace_name="$ORB_DEFAULT_NAMESPACE"
 			_orb_namespace_path="$ORB_DEFAULT_NAMESPACE"

@@ -1,8 +1,14 @@
 # Orb/global help functions
-_orb_handle_help() {
-	$_orb_setting_help || return 1
+_orb_help_requested() {
+	[[ $_orb_setting_help == true ]] || [[ $_orb_setting_tree == true ]]
+}
 
-	if [[ -n "$_orb_function_name" ]]; then
+_orb_handle_help() {
+	_orb_help_requested || return 1
+
+	if [[ $_orb_setting_tree == true ]]; then
+		_orb_print_library_tree
+	elif [[ -n "$_orb_function_name" ]]; then
 		_orb_print_function_help
 	elif [[ -n $_orb_namespace_name ]]; then
 		_orb_print_namespace_help

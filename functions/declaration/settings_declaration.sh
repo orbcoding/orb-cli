@@ -1,6 +1,8 @@
 _orb_settings_declaration=(
   '-h|--help' = _orb_setting_help
     "Show help"
+  '-t|--tree' = _orb_setting_tree
+    "Show namespace tree"
   -l 1 = _orb_setting_libraries
     "Additional orb library folders"
     Multiple: true

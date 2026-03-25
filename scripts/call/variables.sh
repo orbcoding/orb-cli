@@ -7,6 +7,7 @@
 if [[ $1 != only_args_collection ]]; then
   # Orb settings
   declare _orb_setting_help=false
+  declare _orb_setting_tree=false
   declare _orb_setting_raw=false
   declare _orb_setting_restore_functions=false
   declare -a _orb_setting_libraries=()

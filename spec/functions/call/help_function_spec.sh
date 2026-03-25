@@ -87,6 +87,7 @@ Describe '_orb_print_function_help'
 
     When call parse
     # Sections
+    # TODO required options before [OPTION]... Reconsider -- required or not
     The output should equal 'NAME
     orb docker start - Start docker containers
 
