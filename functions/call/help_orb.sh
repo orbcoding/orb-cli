@@ -20,21 +20,17 @@ _orb_handle_help() {
 }
 
 _orb_print_orb_help() {
-	local def_namespace_msg
+	local help_msg=""
 
 	if [[ -n $ORB_DEFAULT_NAMESPACE ]]; then
-		def_namespace_msg="Default namespace: $ORB_DEFAULT_NAMESPACE"
-	else
-		def_namespace_msg="Default namespace \$ORB_DEFAULT_NAMESPACE not set"
+		help_msg="Default namespace: $ORB_DEFAULT_NAMESPACE.\n\n"
 	fi
-
-	local help_msg="$def_namespace_msg.\n\n"
 
 	if [[ -z "${_orb_namespaces[*]}" ]]; then
 		help_msg+="No namespaces found"
 	else
 		help_msg+="$(_orb_print_available_namespaces)\n"
-		help_msg+="To show information about a namespace, use \`orb --help \"namespace\"\`"
+		help_msg+="Use \`orb -h \"namespace\"\` for more info"
 	fi
 
 	echo -e "$help_msg"

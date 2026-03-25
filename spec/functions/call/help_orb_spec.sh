@@ -40,9 +40,7 @@ Describe '_orb_print_orb_help'
 
   It 'prints help with no namespaces or default'
     When call _orb_print_orb_help
-    The output should equal 'Default namespace $ORB_DEFAULT_NAMESPACE not set.
-
-No namespaces found'
+    The output should equal 'No namespaces found'
   End
 
   It 'prints default namespace if found'
@@ -56,9 +54,8 @@ No namespaces found"
   It 'prints namespaces when found'
     _orb_namespaces=( spec spec2 )
     When call _orb_print_orb_help
-    The line 1 of output should include 'Default namespace $ORB_DEFAULT_NAMESPACE not set'
-    The line 4 of output should include "spec"
-    The line 5 of output should include "spec2"
-    The line 7 of output should include 'To show information about a namespace, use `orb --help "namespace"`'
+    The line 2 of output should include "spec"
+    The line 3 of output should include "spec2"
+    The line 5 of output should include 'Use `orb -h "namespace"` for more info'
   End
 End
